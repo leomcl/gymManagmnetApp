@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'customer_view.dart'; // Customer View Screen
-import 'staff_view.dart'; // Staff View Screen
+import 'package:test/auth.dart';
+import 'customer_view.dart';
+import 'staff_view.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,17 +19,18 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
+  final Auth _auth = Auth(); // Create an instance of Auth class
+
   // Sign in method
   Future<void> signInWithEmailAndPassword() async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+      await _auth.signInWithEmailAndPassword(
+        _controllerEmail.text,
+        _controllerPassword.text,
       );
 
-      // Get the user role and navigate to the appropriate screen
-      await _navigateBasedOnRole(userCredential.user);
+      // Navigate to the appropriate screen based on the user's role
+      await _navigateBasedOnRole();
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -37,28 +38,18 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Create account method with Firestore membership status and role selection
+  // Create account method with role selection
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      // Create user in Firebase Auth
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
+      if (_selectedRole != null) {
+        await _auth.createUserWithEmailAndPassword(
+          _controllerEmail.text,
+          _controllerPassword.text,
+          _selectedRole!, // Ensure the role is passed
+        );
 
-      // Get the newly created user's UID
-      User? user = userCredential.user;
-
-      // Store the new user's information in Firestore
-      if (user != null && _selectedRole != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'email': user.email,
-          'membershipStatus': false, // Default membership status
-          'role': _selectedRole, // Store role as customer or staff
-        });
         // Navigate to the appropriate screen based on role
-        await _navigateBasedOnRole(user);
+        await _navigateBasedOnRole();
       } else {
         setState(() {
           errorMessage = 'Please select a role!';
@@ -71,31 +62,21 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Function to get user role and navigate accordingly
-  Future<void> _navigateBasedOnRole(User? user) async {
-    if (user == null) return;
+  // Function to navigate based on role
+  Future<void> _navigateBasedOnRole() async {
+    String? role = await _auth.getUserRole();
 
-    // Fetch the user role from Firestore
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-    if (doc.exists) {
-      String role = doc['role'];
-
-      // Ensure the widget is still mounted before navigating
-      if (mounted) {
-        if (role == 'customer') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => CustomerView()),
-          );
-        } else if (role == 'staff') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => StaffView()),
-          );
-        }
+    if (role != null && mounted) {
+      if (role == 'customer') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CustomerView()),
+        );
+      } else if (role == 'staff') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => StaffView()),
+        );
       }
     }
   }
