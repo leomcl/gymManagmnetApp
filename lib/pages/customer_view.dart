@@ -1,39 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';  // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:test/auth.dart';
-import 'dart:math';  // Import for random code generation
+import 'package:test/pages/login_register_page.dart'; // Import LoginPage to navigate after sign out
+import 'dart:math'; // Import for random code generation
 
-class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+class CustomerView extends StatefulWidget {
+  CustomerView({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _CustomerViewState createState() => _CustomerViewState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final User? user = Auth().currentUser;  // Current user from Firebase Auth
-  String? generatedCode;  // Variable to store the generated code
+class _CustomerViewState extends State<CustomerView> {
+  final User? user = Auth().currentUser; // Current user from Firebase Auth
+  String? generatedCode; // Variable to store the generated code
 
+  // Sign out method to sign out and navigate back to the login page
   Future<void> signOut() async {
-    await Auth().signOut();
+    await Auth().signOut(); // Firebase sign out
+    // Navigate to the login page after signing out
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              const LoginPage()), // Replace the current view with LoginPage
+    );
   }
 
   Widget _title() {
     return const Text('Gym App');
   }
 
-  Widget _signOutButton() {
-    return ElevatedButton(
-      onPressed: signOut,
-      child: const Text('Sign Out'),
-    );
-  }
-
   // Function to fetch Firestore user data
   Future<DocumentSnapshot> _getUserData() async {
     if (user != null) {
-      return FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
     }
     throw 'No user found!';
   }
@@ -46,13 +51,17 @@ class _HomePageState extends State<HomePage> {
 
     // Generate a random 6-digit code
     final Random random = Random();
-    final String code = (random.nextInt(900000) + 100000).toString(); // 6-digit code
+    final String code =
+        (random.nextInt(900000) + 100000).toString(); // 6-digit code
 
     // Set an expiry time (e.g., 1 hour from now)
     final DateTime expiryTime = DateTime.now().add(const Duration(hours: 1));
 
     // Store the code and related information in Firestore
-    await FirebaseFirestore.instance.collection('gymAccessCodes').doc(code).set({
+    await FirebaseFirestore.instance
+        .collection('gymAccessCodes')
+        .doc(code)
+        .set({
       'userId': user!.uid,
       'expiryTime': expiryTime,
     });
@@ -75,6 +84,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: _title(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: signOut, // Trigger sign out when button is pressed
+            tooltip: 'Sign Out',
+          ),
+        ],
       ),
       body: Container(
         height: double.infinity,
@@ -90,9 +106,10 @@ class _HomePageState extends State<HomePage> {
             // Use FutureBuilder to fetch Firestore data
             FutureBuilder<DocumentSnapshot>(
               future: _getUserData(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();  // Show loading indicator while fetching data
+                  return const CircularProgressIndicator(); // Show loading indicator while fetching data
                 }
 
                 if (snapshot.hasError) {
@@ -104,29 +121,29 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 // Extract user data from Firestore document
-                Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+                Map<String, dynamic> data =
+                    snapshot.data!.data() as Map<String, dynamic>;
 
                 return Column(
                   children: [
-                    Text('Membership Status: ${data['membershipStatus'] ? 'Valid' : 'Invalid'}'),
+                    Text(
+                        'Membership Status: ${data['membershipStatus'] ? 'Valid' : 'Invalid'}'),
                   ],
                 );
               },
             ),
 
-            const SizedBox(height: 20),  // Spacing
-            _signOutButton(),  // Sign out button
+            const SizedBox(height: 20), // Spacing
+            _getCodeButton(), // Get Code button
 
-            const SizedBox(height: 20),  // Spacing
-            _getCodeButton(),  // Get Code button
-
-            const SizedBox(height: 20),  // Spacing
+            const SizedBox(height: 20), // Spacing
 
             // Display the generated code, if available
             if (generatedCode != null)
               Text(
                 'Your Access Code: $generatedCode',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
           ],
         ),
