@@ -15,6 +15,9 @@ class CustomerView extends StatefulWidget {
 class _CustomerViewState extends State<CustomerView> {
   final User? user = Auth().currentUser; // Current user from Firebase Auth
   String? generatedCode; // Variable to store the generated code
+  bool isMembershipValid = false; // Variable to store membership status
+  bool isLoading =
+      true; // For loading indicator while fetching membership status
 
   // Sign out method to sign out and navigate back to the login page
   Future<void> signOut() async {
@@ -32,15 +35,32 @@ class _CustomerViewState extends State<CustomerView> {
     return const Text('Gym App');
   }
 
-  // Function to fetch Firestore user data
-  Future<DocumentSnapshot> _getUserData() async {
+  // Function to fetch Firestore user data and update membership status
+  Future<void> _getUserData() async {
     if (user != null) {
-      return FirebaseFirestore.instance
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          isMembershipValid = data['membershipStatus'] == true;
+          isLoading = false;
+        });
+      } else {
+        throw 'User data not found!';
+      }
+    } else {
+      throw 'No user found!';
     }
-    throw 'No user found!';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData(); // Fetch membership status when the screen loads
   }
 
   // Function to generate a temporary access code and store it in Firestore
@@ -74,7 +94,9 @@ class _CustomerViewState extends State<CustomerView> {
 
   Widget _getCodeButton() {
     return ElevatedButton(
-      onPressed: _generateTempCode,
+      onPressed: isMembershipValid
+          ? _generateTempCode
+          : null, // Disable button if membership is invalid
       child: const Text('Get Code'),
     );
   }
@@ -92,62 +114,44 @@ class _CustomerViewState extends State<CustomerView> {
           ),
         ],
       ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Display user email
-            Text(user?.email ?? 'No user email'),
+      body: isLoading
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) // Loading indicator while fetching user data
+          : Container(
+              height: double.infinity,
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Display user email
+                  Text(user?.email ?? 'No user email'),
 
-            // Use FutureBuilder to fetch Firestore data
-            FutureBuilder<DocumentSnapshot>(
-              future: _getUserData(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(); // Show loading indicator while fetching data
-                }
+                  const SizedBox(height: 20), // Spacing
 
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
+                  // Show membership status
+                  Text(
+                      'Membership Status: ${isMembershipValid ? 'Valid' : 'Invalid'}'),
 
-                if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return const Text('No user data found.');
-                }
+                  const SizedBox(height: 20), // Spacing
 
-                // Extract user data from Firestore document
-                Map<String, dynamic> data =
-                    snapshot.data!.data() as Map<String, dynamic>;
+                  // Display the Get Code button, only enabled if membership is valid
+                  _getCodeButton(),
 
-                return Column(
-                  children: [
+                  const SizedBox(height: 20), // Spacing
+
+                  // Display the generated code, if available
+                  if (generatedCode != null)
                     Text(
-                        'Membership Status: ${data['membershipStatus'] ? 'Valid' : 'Invalid'}'),
-                  ],
-                );
-              },
-            ),
-
-            const SizedBox(height: 20), // Spacing
-            _getCodeButton(), // Get Code button
-
-            const SizedBox(height: 20), // Spacing
-
-            // Display the generated code, if available
-            if (generatedCode != null)
-              Text(
-                'Your Access Code: $generatedCode',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      'Your Access Code: $generatedCode',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                ],
               ),
-          ],
-        ),
-      ),
+            ),
     );
   }
 }
