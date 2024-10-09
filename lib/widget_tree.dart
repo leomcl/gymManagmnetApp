@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/customer_view.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_view.dart'; // Add staff view import
+import 'package:test/pages/staff_page/staff_view.dart'; // Add staff view import
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
