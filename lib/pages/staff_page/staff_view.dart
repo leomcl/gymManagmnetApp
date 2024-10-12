@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:test/auth.dart'; // Ensure you have your auth handling here
-import 'package:test/pages/login_register_page.dart'; // For navigating to login page after sign out
+import 'package:test/auth.dart';
+import 'package:test/pages/login_register_page.dart';
+import 'package:test/pages/staff_page/gym_counter.dart';
 
 class StaffView extends StatefulWidget {
   @override
@@ -13,8 +14,10 @@ class _StaffViewState extends State<StaffView> {
       TextEditingController(); // For inputting access code
   String? _validationMessage; // To display validation results
   bool _isLoading = false; // For showing a loading indicator
+  final GymCounter _gymCounter =
+      GymCounter(); // Instance of GymCounter for tracking the number of people in the gym
 
-  // Function to validate the access code
+  // Function to validate the access code and update count when someone enters
   Future<void> _validateAccessCode() async {
     String code = _codeController.text.trim();
 
@@ -38,7 +41,7 @@ class _StaffViewState extends State<StaffView> {
 
     if (!doc.exists) {
       setState(() {
-        _validationMessage = 'This code does not exist.';
+        _validationMessage = 'Invalid code. This code does not exist.';
         _isLoading = false;
       });
       return;
@@ -55,20 +58,39 @@ class _StaffViewState extends State<StaffView> {
           .doc(code)
           .delete();
       setState(() {
-        _validationMessage = 'This code has expired.';
+        _validationMessage = 'This code has expired and has been deleted.';
         _isLoading = false;
       });
     } else {
-      // If the code is valid, delete the document and show valid message
+      // If the code is valid, increment the gym count and delete the document
       await FirebaseFirestore.instance
           .collection('gymAccessCodes')
           .doc(code)
           .delete();
+      await _gymCounter
+          .incrementGymCount(); // Increment the number of people in the gym
       setState(() {
-        _validationMessage = 'Access code is valid. User ID: ${data['userId']}';
+        _validationMessage =
+            'Access code is valid, user entered. User ID: ${data['userId']}';
         _isLoading = false;
       });
     }
+  }
+
+  // Function to handle decrementing the gym count when someone leaves
+  Future<void> _leaveGym() async {
+    setState(() {
+      _isLoading = true;
+      _validationMessage = null;
+    });
+
+    // Decrement the gym count by 1
+    await _gymCounter.decrementGymCount();
+
+    setState(() {
+      _validationMessage = 'Gym count decremented. Someone has left the gym.';
+      _isLoading = false;
+    });
   }
 
   Future<void> _signOut() async {
@@ -126,13 +148,23 @@ class _StaffViewState extends State<StaffView> {
             ),
             const SizedBox(height: 20),
 
+            // Button to decrement the gym count when someone leaves
+            ElevatedButton(
+              onPressed: _leaveGym,
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Leave Gym'),
+            ),
+            const SizedBox(height: 20),
+
             // Display validation message (if any)
             if (_validationMessage != null)
               Text(
                 _validationMessage!,
                 style: TextStyle(
                   fontSize: 18,
-                  color: _validationMessage!.contains('valid')
+                  color: _validationMessage!.contains('valid') ||
+                          _validationMessage!.contains('decremented')
                       ? Colors.green
                       : Colors.red,
                 ),
