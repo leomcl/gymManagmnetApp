@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/customer_view.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_page/staff_view.dart'; // Add staff view import
-import 'package:flutter/material.dart';
+import 'package:test/pages/staff_page/staff_home_view.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -13,8 +13,8 @@ class WidgetTree extends StatefulWidget {
 }
 
 class _WidgetTreeState extends State<WidgetTree> {
+  // Function to get the user's role from Firestore
   Future<String?> _getUserRole() async {
-    // Get the current user from Firebase Auth
     final user = Auth().currentUser;
 
     if (user != null) {
@@ -27,46 +27,56 @@ class _WidgetTreeState extends State<WidgetTree> {
         return doc['role']; // Return the role ('customer' or 'staff')
       }
     }
-    return null;
+    return null;  // If no user is authenticated or role is missing
   }
 
   @override
   Widget build(BuildContext context) {
+    // StreamBuilder listens to Firebase Auth state changes (login/logout)
     return StreamBuilder(
-      stream: Auth().authStateChanges,
+      stream: Auth().authStateChanges,  // Auth state change stream
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a loading indicator while waiting for authentication
+          return const Center(child: CircularProgressIndicator());
+        }
+
         if (snapshot.hasData) {
-          // User is authenticated, now check their role
+          // If user is authenticated, check their role
           return FutureBuilder<String?>(
             future: _getUserRole(),
             builder: (context, roleSnapshot) {
               if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                    child:
-                        CircularProgressIndicator()); // Loading spinner while role is being fetched
+                // Show loading spinner while fetching the role
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (roleSnapshot.hasError) {
+                // Show error message if there's an error fetching role
                 return const Center(child: Text('Error fetching user role.'));
               }
 
               if (roleSnapshot.hasData) {
-                // Navigate based on the role
                 String? role = roleSnapshot.data;
+
                 if (role == 'customer') {
+                  // If user is a customer, navigate to CustomerView
                   return CustomerView();
                 } else if (role == 'staff') {
-                  return StaffView();
+                  // If user is a staff, navigate to StaffHomeView (with BottomNavigationBar)
+                  return StaffHomeView();
                 } else {
+                  // If role is not defined, show an error message
                   return const Center(child: Text('Role not defined.'));
                 }
               }
 
+              // If no role is found, show an error message
               return const Center(child: Text('No user role found.'));
             },
           );
         } else {
-          // User is not authenticated, show login page
+          // If the user is not authenticated, show the LoginPage
           return const LoginPage();
         }
       },
