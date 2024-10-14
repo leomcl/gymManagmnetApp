@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test/auth.dart';
 import 'pages/customer_pages/customer_home_view.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_page/staff_home_view.dart';
+import 'package:test/pages/staff_pages/staff_home_view.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});

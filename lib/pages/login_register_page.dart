@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/customer_pages/customer_home_view.dart';
-import 'package:test/pages/staff_page/staff_home_view.dart';
+import 'package:test/pages/staff_pages/staff_home_view.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
             _entryField('Email', _controllerEmail),
             _entryField('Password', _controllerPassword, isPassword: true),
             _errorMessage(),
-            _roleSelection(), // Show role selection during registration
+            _roleSelection(),
             _submitButton(),
             _loginOrRegisterButton(),
           ],

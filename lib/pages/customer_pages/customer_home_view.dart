@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'customer_view.dart';
-import 'package:test/pages/gym_stats_view.dart';
+import 'package:test/pages/customer_pages/gym_stats_view.dart';
 class CustomerHomeView extends StatefulWidget {
   @override
   _CustomerHomeViewState createState() => _CustomerHomeViewState();

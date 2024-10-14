@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_page/gym_aggregator.dart';
+import 'package:test/pages/staff_pages/gym_aggregator.dart';
 
 class StaffView extends StatefulWidget {
   @override
