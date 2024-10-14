@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_page/gym_counter.dart';
-import 'package:test/pages/staff_page/gym_logger.dart';
+import 'package:test/pages/staff_page/gym_aggregator.dart';
 
 class StaffView extends StatefulWidget {
   @override
@@ -17,10 +16,7 @@ class _StaffViewState extends State<StaffView> {
       TextEditingController(); // For inputting exit access code
   String? _validationMessage; // To display validation results
   bool _isLoading = false; // For showing a loading indicator
-  final GymCounter _gymCounter =
-      GymCounter(); // Instance for tracking gym count
-  final GymLogManager _gymLogManager =
-      GymLogManager(); // Instance for logging user events
+  final GymAggregator _gymAggregator = GymAggregator(); // Instance for managing gym stats
 
   // Function to validate the entry access code and update count when someone enters
   Future<void> _validateEntryCode() async {
@@ -68,10 +64,8 @@ class _StaffViewState extends State<StaffView> {
         _isLoading = false;
       });
     } else {
-      // If the code is valid, log the entry, increment the gym count, and delete the document
-      await _gymLogManager.logUserEntry(userId); // Log user entry
-      await _gymCounter.incrementGymCount(); // Update gym count
-
+      // If the code is valid, log the entry, update the hourly aggregated data, and delete the document
+      await _gymAggregator.updateHourlyGymStats('entry', DateTime.now()); // Update hourly stats
       await FirebaseFirestore.instance
           .collection('gymAccessCodes')
           .doc(code)
@@ -118,9 +112,8 @@ class _StaffViewState extends State<StaffView> {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     String userId = data['userId'];
 
-    // Log the user exit and decrement the gym count
-    await _gymLogManager.logUserExit(userId); // Log user exit
-    await _gymCounter.decrementGymCount(); // Update gym count
+    // Update the hourly aggregated data for the exit event
+    await _gymAggregator.updateHourlyGymStats('exit', DateTime.now());
 
     // Optionally delete the access code if it's a single-use code (like entry)
     await FirebaseFirestore.instance
