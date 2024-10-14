@@ -12,13 +12,12 @@ class GymCounter {
       DocumentSnapshot snapshot = await transaction.get(gymStatusRef);
 
       if (!snapshot.exists) {
-        // If the document doesn't exist, create it with initial value 1
+        // If the document doesn't exist, create it with an initial value of 1
         transaction.set(gymStatusRef, {'currentCount': 1});
       } else {
-        // Increment the count if it already exists
-        int newCount =
-            (snapshot.data() as Map<String, dynamic>)['currentCount'] + 1;
-        transaction.update(gymStatusRef, {'currentCount': newCount});
+        // Safely retrieve and increment the count, defaulting to 0 if currentCount is null
+        int currentCount = (snapshot.data() as Map<String, dynamic>)['currentCount'] ?? 0;
+        transaction.update(gymStatusRef, {'currentCount': currentCount + 1});
       }
     });
   }
@@ -35,11 +34,10 @@ class GymCounter {
         // If the document doesn't exist, set the initial count to 0
         transaction.set(gymStatusRef, {'currentCount': 0});
       } else {
+        // Safely retrieve the current count, defaulting to 0 if currentCount is null
+        int currentCount = (snapshot.data() as Map<String, dynamic>)['currentCount'] ?? 0;
         // Decrement the count, ensuring it doesn't go below zero
-        int currentCount =
-            (snapshot.data() as Map<String, dynamic>)['currentCount'];
-        int newCount =
-            currentCount > 0 ? currentCount - 1 : 0; // Ensure no negative count
+        int newCount = currentCount > 0 ? currentCount - 1 : 0;
         transaction.update(gymStatusRef, {'currentCount': newCount});
       }
     });
