@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test/auth.dart';
-import 'package:test/pages/customer_view.dart';
+import 'pages/customer_pages/customer_home_view.dart';
 import 'package:test/pages/login_register_page.dart';
 import 'package:test/pages/staff_page/staff_home_view.dart';
 
@@ -60,8 +60,8 @@ class _WidgetTreeState extends State<WidgetTree> {
                 String? role = roleSnapshot.data;
 
                 if (role == 'customer') {
-                  // If user is a customer, navigate to CustomerView
-                  return CustomerView();
+                  // If user is a customer, navigate to CustomerHomeView (with BottomNavigationBar)
+                  return CustomerHomeView();
                 } else if (role == 'staff') {
                   // If user is a staff, navigate to StaffHomeView (with BottomNavigationBar)
                   return StaffHomeView();

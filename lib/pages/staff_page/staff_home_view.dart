@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test/pages/staff_page/staff_view.dart';  // Import your StaffView
-import 'package:test/pages/gym_stats_page/gym_stats_view.dart';
+import 'package:test/pages/gym_stats_view.dart';
 
 class StaffHomeView extends StatefulWidget {
   @override

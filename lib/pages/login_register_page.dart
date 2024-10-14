@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test/auth.dart';
-import 'package:test/pages/customer_view.dart';
+import 'package:test/pages/customer_pages/customer_home_view.dart';
 import 'package:test/pages/staff_page/staff_home_view.dart';
 
 class LoginPage extends StatefulWidget {
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
       if (role == 'customer') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => CustomerView()),
+          MaterialPageRoute(builder: (context) => CustomerHomeView()),
         );
       } else if (role == 'staff') {
         Navigator.pushReplacement(
