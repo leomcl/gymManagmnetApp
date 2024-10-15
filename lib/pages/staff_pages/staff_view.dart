@@ -11,12 +11,12 @@ class StaffView extends StatefulWidget {
 
 class _StaffViewState extends State<StaffView> {
   final TextEditingController _entryCodeController =
-      TextEditingController(); // For inputting entry access code
+      TextEditingController();
   final TextEditingController _exitCodeController =
-      TextEditingController(); // For inputting exit access code
-  String? _validationMessage; // To display validation results
-  bool _isLoading = false; // For showing a loading indicator
-  final GymAggregator _gymAggregator = GymAggregator(); // Instance for managing gym stats
+      TextEditingController(); 
+  String? _validationMessage; 
+  bool _isLoading = false;
+  final GymAggregator _gymAggregator = GymAggregator();
 
   // Function to validate the entry access code and update count when someone enters
   Future<void> _validateEntryCode() async {
@@ -31,7 +31,7 @@ class _StaffViewState extends State<StaffView> {
 
     setState(() {
       _isLoading = true;
-      _validationMessage = null; // Clear previous messages
+      _validationMessage = null;
     });
 
     // Fetch the document from Firestore with the given code
@@ -128,13 +128,12 @@ class _StaffViewState extends State<StaffView> {
   }
 
   Future<void> _signOut() async {
-    await Auth().signOut(); // Sign out the user from FirebaseAuth
-    // Navigate to the login page after sign-out
+    await Auth().signOut(); 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
           builder: (context) =>
-              const LoginPage()), // Replace with the login page
+              const LoginPage()),
     );
   }
 
@@ -145,8 +144,8 @@ class _StaffViewState extends State<StaffView> {
         title: const Text('Staff - Validate Access Code'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout), // Logout icon button
-            onPressed: _signOut, // Sign out on button press
+            icon: const Icon(Icons.logout), 
+            onPressed: _signOut, 
             tooltip: 'Sign Out',
           ),
         ],

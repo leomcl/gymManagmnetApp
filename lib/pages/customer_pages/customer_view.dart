@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:test/auth.dart';
-import 'package:test/pages/login_register_page.dart'; // Import LoginPage to navigate after sign out
-import 'dart:math'; // Import for random code generation
+import 'package:test/pages/login_register_page.dart';
+import 'dart:math';
 
 class CustomerView extends StatefulWidget {
   CustomerView({Key? key}) : super(key: key);
@@ -13,21 +13,20 @@ class CustomerView extends StatefulWidget {
 }
 
 class _CustomerViewState extends State<CustomerView> {
-  final User? user = Auth().currentUser; // Current user from Firebase Auth
-  String? generatedCode; // Variable to store the generated code
-  bool isMembershipValid = false; // Variable to store membership status
+  final User? user = Auth().currentUser; 
+  String? generatedCode; 
+  bool isMembershipValid = false;
   bool isLoading =
-      true; // For loading indicator while fetching membership status
+      true;
 
   // Sign out method to sign out and navigate back to the login page
   Future<void> signOut() async {
-    await Auth().signOut(); // Firebase sign out
-    // Navigate to the login page after signing out
+    await Auth().signOut();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
           builder: (context) =>
-              const LoginPage()), // Replace the current view with LoginPage
+              const LoginPage()),
     );
   }
 
@@ -60,7 +59,7 @@ class _CustomerViewState extends State<CustomerView> {
   @override
   void initState() {
     super.initState();
-    _getUserData(); // Fetch membership status when the screen loads
+    _getUserData();
   }
 
   // Function to generate a temporary access code and store it in Firestore
@@ -74,7 +73,7 @@ class _CustomerViewState extends State<CustomerView> {
     final String code =
         (random.nextInt(900000) + 100000).toString(); // 6-digit code
 
-    // Set an expiry time (e.g., 1 hour from now)
+    // Set an expiry time
     final DateTime expiryTime = DateTime.now().add(const Duration(hours: 1));
 
     // Store the code and related information in Firestore
@@ -96,7 +95,7 @@ class _CustomerViewState extends State<CustomerView> {
     return ElevatedButton(
       onPressed: isMembershipValid
           ? _generateTempCode
-          : null, // Disable button if membership is invalid
+          : null,
       child: const Text('Get Code'),
     );
   }
@@ -109,7 +108,7 @@ class _CustomerViewState extends State<CustomerView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: signOut, // Trigger sign out when button is pressed
+            onPressed: signOut,
             tooltip: 'Sign Out',
           ),
         ],
@@ -129,20 +128,18 @@ class _CustomerViewState extends State<CustomerView> {
                   // Display user email
                   Text(user?.email ?? 'No user email'),
 
-                  const SizedBox(height: 20), // Spacing
+                  const SizedBox(height: 20),
 
                   // Show membership status
                   Text(
                       'Membership Status: ${isMembershipValid ? 'Valid' : 'Invalid'}'),
 
-                  const SizedBox(height: 20), // Spacing
+                  const SizedBox(height: 20),
 
-                  // Display the Get Code button, only enabled if membership is valid
                   _getCodeButton(),
 
-                  const SizedBox(height: 20), // Spacing
+                  const SizedBox(height: 20),
 
-                  // Display the generated code, if available
                   if (generatedCode != null)
                     Text(
                       'Your Access Code: $generatedCode',

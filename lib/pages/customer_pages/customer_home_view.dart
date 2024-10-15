@@ -7,7 +7,7 @@ class CustomerHomeView extends StatefulWidget {
 }
 
 class _CustomerHomeViewState extends State<CustomerHomeView> {
-  int _currentIndex = 0;  // Track the currently selected tab
+  int _currentIndex = 0;
 
   // List of pages for the BottomNavigationBar
   final List<Widget> _pages = [
@@ -30,15 +30,15 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
       ),
       body: _pages[_currentIndex],  // Display the selected page
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,  // Track selected tab
-        onTap: _onTabTapped,          // Handle tab switching
+        currentIndex: _currentIndex,  
+        onTap: _onTabTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),  // Icon for Customer View
+            icon: Icon(Icons.person),
             label: 'Customer',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),  // Icon for Gym Stats View
+            icon: Icon(Icons.bar_chart),
             label: 'Gym Stats',
           ),
         ],

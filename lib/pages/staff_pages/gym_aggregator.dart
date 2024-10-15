@@ -14,11 +14,10 @@ class GymAggregator {
       DocumentSnapshot snapshot = await transaction.get(hourlyStatsRef);
 
       if (!snapshot.exists) {
-        // If the document for this hour doesn't exist, create it with initial values
         transaction.set(hourlyStatsRef, {
           'entries': 0,
           'exits': 0,
-          'timestamp': eventTime  // Store timestamp for easy querying later
+          'timestamp': eventTime 
         });
       }
 
