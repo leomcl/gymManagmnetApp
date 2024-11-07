@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
 import 'dart:math';
@@ -13,20 +13,17 @@ class CustomerView extends StatefulWidget {
 }
 
 class _CustomerViewState extends State<CustomerView> {
-  final User? user = Auth().currentUser; 
-  String? generatedCode; 
+  final User? user = Auth().currentUser;
+  String? generatedEntryCode;
+  String? generatedExitCode;
   bool isMembershipValid = false;
-  bool isLoading =
-      true;
+  bool isLoading = true;
 
-  // Sign out method to sign out and navigate back to the login page
   Future<void> signOut() async {
     await Auth().signOut();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -34,7 +31,6 @@ class _CustomerViewState extends State<CustomerView> {
     return const Text('Gym App');
   }
 
-  // Function to fetch Firestore user data and update membership status
   Future<void> _getUserData() async {
     if (user != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -62,41 +58,45 @@ class _CustomerViewState extends State<CustomerView> {
     _getUserData();
   }
 
-  // Function to generate a temporary access code and store it in Firestore
-  Future<void> _generateTempCode() async {
+  Future<void> _generateTempCode(bool isEntry) async {
     if (user == null) {
       throw 'No user found!';
     }
 
-    // Generate a random 6-digit code
     final Random random = Random();
-    final String code =
-        (random.nextInt(900000) + 100000).toString(); // 6-digit code
+    String code;
 
-    // Set an expiry time
+    // Generate a random even or odd 6-digit code based on isEntry flag
+    if (isEntry) {
+      code = ((random.nextInt(450000) * 2) + 100000).toString(); // Even number
+    } else {
+      code = ((random.nextInt(450000) * 2) + 100001).toString(); // Odd number
+    }
+
     final DateTime expiryTime = DateTime.now().add(const Duration(hours: 1));
 
-    // Store the code and related information in Firestore
     await FirebaseFirestore.instance
         .collection('gymAccessCodes')
         .doc(code)
         .set({
       'userId': user!.uid,
       'expiryTime': expiryTime,
+      'type': isEntry ? 'enter' : 'exit',
     });
 
-    // Set the generated code to the state so it can be displayed
     setState(() {
-      generatedCode = code;
+      if (isEntry) {
+        generatedEntryCode = code;
+      } else {
+        generatedExitCode = code;
+      }
     });
   }
 
-  Widget _getCodeButton() {
+  Widget _getCodeButton({required String label, required bool isEntry}) {
     return ElevatedButton(
-      onPressed: isMembershipValid
-          ? _generateTempCode
-          : null,
-      child: const Text('Get Code'),
+      onPressed: isMembershipValid ? () => _generateTempCode(isEntry) : null,
+      child: Text(label),
     );
   }
 
@@ -115,8 +115,8 @@ class _CustomerViewState extends State<CustomerView> {
       ),
       body: isLoading
           ? const Center(
-              child:
-                  CircularProgressIndicator()) // Loading indicator while fetching user data
+              child: CircularProgressIndicator(),
+            )
           : Container(
               height: double.infinity,
               width: double.infinity,
@@ -125,24 +125,25 @@ class _CustomerViewState extends State<CustomerView> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Display user email
                   Text(user?.email ?? 'No user email'),
-
                   const SizedBox(height: 20),
-
-                  // Show membership status
                   Text(
                       'Membership Status: ${isMembershipValid ? 'Valid' : 'Invalid'}'),
-
                   const SizedBox(height: 20),
-
-                  _getCodeButton(),
-
+                  _getCodeButton(label: 'Get Entry Code', isEntry: true),
                   const SizedBox(height: 20),
-
-                  if (generatedCode != null)
+                  _getCodeButton(label: 'Get Exit Code', isEntry: false),
+                  const SizedBox(height: 20),
+                  if (generatedEntryCode != null)
                     Text(
-                      'Your Access Code: $generatedCode',
+                      'Your Entry Code: $generatedEntryCode',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  const SizedBox(height: 20),
+                  if (generatedExitCode != null)
+                    Text(
+                      'Your Exit Code: $generatedExitCode',
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
