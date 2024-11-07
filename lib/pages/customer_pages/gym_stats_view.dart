@@ -1,7 +1,7 @@
-// gym_stats_view.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'hourly_entries_chart.dart';
+
 class GymStatsView extends StatefulWidget {
   const GymStatsView({Key? key}) : super(key: key);
 
@@ -71,7 +71,7 @@ class _GymStatsViewState extends State<GymStatsView> {
         .map((snapshot) {
       int totalCount = 0;
       for (var doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         int entries = data['entries'] ?? 0;
         int exits = data['exits'] ?? 0;
         totalCount += entries - exits;
