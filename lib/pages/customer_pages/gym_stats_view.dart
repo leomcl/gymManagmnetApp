@@ -1,6 +1,7 @@
+// gym_stats_view.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'hourly_entries_chart.dart';
 class GymStatsView extends StatefulWidget {
   const GymStatsView({Key? key}) : super(key: key);
 
@@ -44,6 +45,18 @@ class _GymStatsViewState extends State<GymStatsView> {
                 }
               },
             ),
+
+            const SizedBox(height: 30),
+
+            // Display the hourly entries chart
+            const Text(
+              'Hourly Gym Attendance:',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const Expanded(
+              child: HourlyEntriesChart(),  // Include the chart widget here
+            ),
           ],
         ),
       ),
@@ -56,14 +69,14 @@ class _GymStatsViewState extends State<GymStatsView> {
         .collection('gymHourlyStats')
         .snapshots()
         .map((snapshot) {
-          int totalCount = 0;
-          for (var doc in snapshot.docs) {
-            final data = doc.data() as Map<String, dynamic>;
-            int entries = data['entries'] ?? 0;
-            int exits = data['exits'] ?? 0;
-            totalCount += entries - exits;
-          }
-          return totalCount;
-        });
+      int totalCount = 0;
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        int entries = data['entries'] ?? 0;
+        int exits = data['exits'] ?? 0;
+        totalCount += entries - exits;
+      }
+      return totalCount;
+    });
   }
 }
