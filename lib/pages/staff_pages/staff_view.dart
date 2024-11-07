@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'package:test/pages/staff_pages/gym_aggregator.dart';
-import 'package:test/pages/staff_pages/gym_logger.dart'; // Import GymLogManager
 
 class StaffView extends StatefulWidget {
   @override
@@ -15,8 +13,6 @@ class _StaffViewState extends State<StaffView> {
   final TextEditingController _exitCodeController = TextEditingController();
   String? _validationMessage;
   bool _isLoading = false;
-  final GymAggregator _gymAggregator = GymAggregator();
-  final GymLogManager _gymLogManager = GymLogManager();
 
   // Function to validate the entry access code and update count when someone enters
   Future<void> _validateEntryCode() async {
@@ -65,14 +61,13 @@ class _StaffViewState extends State<StaffView> {
       });
     } else {
       // If the code is valid, log the entry, update the hourly aggregated data, and delete the document
-      await _gymAggregator.updateHourlyGymStats('entry', DateTime.now());
-      await _gymLogManager.logUserEntry(userId); // Log user entry
       await FirebaseFirestore.instance
           .collection('gymAccessCodes')
           .doc(code)
           .delete();
       setState(() {
-        _validationMessage = 'Access code is valid, user entered. User ID: $userId';
+        _validationMessage =
+            'Access code is valid, user entered. User ID: $userId';
         _isLoading = false;
       });
     }
@@ -111,10 +106,6 @@ class _StaffViewState extends State<StaffView> {
     // Extract data from the document and get the user ID for exit
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     String userId = data['userId'];
-
-    // Update the hourly aggregated data for the exit event
-    await _gymAggregator.updateHourlyGymStats('exit', DateTime.now());
-    await _gymLogManager.logUserExit(userId); 
 
     // Optionally delete the access code if it's a single-use code (like entry)
     await FirebaseFirestore.instance
