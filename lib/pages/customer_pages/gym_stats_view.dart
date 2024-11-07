@@ -55,7 +55,7 @@ class _GymStatsViewState extends State<GymStatsView> {
             ),
             const SizedBox(height: 10),
             const Expanded(
-              child: HourlyEntriesChart(),  // Include the chart widget here
+              child: HourlyEntriesChart(),
             ),
           ],
         ),
