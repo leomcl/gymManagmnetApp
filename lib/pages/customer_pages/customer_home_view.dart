@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'customer_view.dart';
 import 'package:test/pages/customer_pages/gym_stats_view.dart';
+import 'package:test/pages/customer_pages/workout_selection_view.dart';
+
 class CustomerHomeView extends StatefulWidget {
   @override
   _CustomerHomeViewState createState() => _CustomerHomeViewState();
@@ -13,6 +15,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   final List<Widget> _pages = [
     CustomerView(),
     GymStatsView(),
+    WorkoutSelectionPage(),  // Add the Workout Selection Page
   ];
 
   // Function to handle tab switching
@@ -40,6 +43,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Gym Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Workout',
           ),
         ],
       ),
