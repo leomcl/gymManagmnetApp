@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'hourly_entries_chart.dart';
+import 'gym_bar_chart.dart';
 
 class GymStatsView extends StatefulWidget {
   const GymStatsView({Key? key}) : super(key: key);
