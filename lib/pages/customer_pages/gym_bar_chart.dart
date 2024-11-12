@@ -60,33 +60,75 @@ class HourlyEntriesChart extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           final hourlyEntries = snapshot.data!;
-          return BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              maxY: hourlyEntries.values.reduce((a, b) => a > b ? a : b).toDouble() + 5,
-              barGroups: hourlyEntries.entries.map((entry) {
-                return BarChartGroupData(
-                  x: entry.key,
-                  barRods: [
-                    BarChartRodData(
-                      toY: entry.value.toDouble(),
-                      color: Colors.blue,
-                      width: 15,
-                      borderRadius: BorderRadius.circular(4),
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: 800,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.start,
+                    maxY: hourlyEntries.values.reduce((a, b) => a > b ? a : b).toDouble() + 5,
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: 5,
                     ),
-                  ],
-                );
-              }).toList(),
-              titlesData: FlTitlesData(
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: true),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (double value, TitleMeta meta) {
-                      return Text(value.toInt().toString());
-                    },
+                    barGroups: hourlyEntries.entries.map((entry) {
+                      return BarChartGroupData(
+                        x: entry.key,
+                        barRods: [
+                          BarChartRodData(
+                            toY: entry.value.toDouble(),
+                            color: Colors.blue.shade400,
+                            width: 25,
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 40,
+                          interval: 5,
+                        ),
+                      ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (double value, TitleMeta meta) {
+                            final hour = value.toInt();
+                            final period = hour >= 12 ? 'PM' : 'AM';
+                            final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                '$displayHour $period',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            );
+                          },
+                          reservedSize: 30,
+                        ),
+                      ),
+                    ),
+                    borderData: FlBorderData(
+                      show: true,
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.shade300),
+                        left: BorderSide(color: Colors.grey.shade300),
+                      ),
+                    ),
                   ),
                 ),
               ),
