@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
-import 'dart:math';
+import 'package:test/utils/access_code_generator.dart';
 
 class CustomerView extends StatefulWidget {
   const CustomerView({super.key});
@@ -63,26 +63,10 @@ class CustomerViewState extends State<CustomerView> {
       throw 'No user found!';
     }
 
-    final Random random = Random();
-    String code;
-
-    // Generate a random even or odd 6-digit code based on isEntry flag
-    if (isEntry) {
-      code = ((random.nextInt(450000) * 2) + 100000).toString(); // Even number
-    } else {
-      code = ((random.nextInt(450000) * 2) + 100001).toString(); // Odd number
-    }
-
-    final DateTime expiryTime = DateTime.now().add(const Duration(hours: 1));
-
-    await FirebaseFirestore.instance
-        .collection('gymAccessCodes')
-        .doc(code)
-        .set({
-      'userId': user!.uid,
-      'expiryTime': expiryTime,
-      'type': isEntry ? 'enter' : 'exit',
-    });
+    final String code = await AccessCodeGenerator.generateAndSaveCode(
+      userId: user!.uid,
+      isEntry: isEntry,
+    );
 
     setState(() {
       if (isEntry) {
