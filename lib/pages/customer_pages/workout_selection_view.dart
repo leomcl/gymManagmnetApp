@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:test/utils/access_code_generator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WorkoutSelectionPage extends StatefulWidget {
   const WorkoutSelectionPage({super.key});
@@ -109,8 +111,40 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
                 minimumSize: Size(double.infinity, 48),
                 elevation: 3,
               ),
-              onPressed: () {
-                // Leave gym button functionality
+              onPressed: () async {
+                try {
+                  // Generate and save exit code
+                  final String exitCode = await AccessCodeGenerator.generateAndSaveCode(
+                    userId: FirebaseAuth.instance.currentUser!.uid,
+                    isEntry: false,
+                  );
+                  
+                  // Show dialog with exit code
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Exit Code'),
+                          content: Text('Your exit code is: $exitCode'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                } catch (e) {
+                  // Handle any errors
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error generating exit code: $e')),
+                    );
+                  }
+                }
               },
               child: Text(
                 'Leave Gym',
