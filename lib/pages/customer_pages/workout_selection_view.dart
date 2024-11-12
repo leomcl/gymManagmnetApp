@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test/utils/access_code_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WorkoutSelectionPage extends StatefulWidget {
   const WorkoutSelectionPage({super.key});
@@ -113,6 +114,25 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
               ),
               onPressed: () async {
                 try {
+                  final userId = FirebaseAuth.instance.currentUser!.uid;
+                  final entryTime = DateTime.now();
+                  
+                  // Calculate duration in minutes
+                  final duration = entryTime.difference(entryTime).inMinutes;
+
+                  // Record gym usage
+                  await FirebaseFirestore.instance
+                      .collection('gymUsageHistory')
+                      .doc('${userId}_${entryTime.toIso8601String()}')
+                      .set({
+                    'userId': userId,
+                    'entryTime': entryTime,
+                    'exitTime': entryTime,
+                    'duration': duration,  // Added duration field
+                    'workoutTags': _selectedWorkouts,
+                    'workoutType': 'regular',
+                  });
+
                   // Generate and save exit code
                   final String exitCode = await AccessCodeGenerator.generateAndSaveCode(
                     userId: FirebaseAuth.instance.currentUser!.uid,
