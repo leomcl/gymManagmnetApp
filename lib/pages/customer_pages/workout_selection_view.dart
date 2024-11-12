@@ -21,51 +21,60 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 0,
-        elevation: 0,
+        toolbarHeight: 56,
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          "Customer's Name",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 2,
       ),
       body: Column(
         children: [
           Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: Text(
-                "Customer's Name",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
+            margin: EdgeInsets.symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.directions_walk, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text(
-                        'Duration: 00:00',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
+                Icon(Icons.timer, color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
+                Text(
+                  'Duration: 00:00',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(12),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
             child: Text(
-              'Select workout',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+              'Select Your Workout',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
           ),
           SizedBox(height: 16),
@@ -88,18 +97,28 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(24.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[400],
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
+                padding: EdgeInsets.symmetric(vertical: 16),
                 minimumSize: Size(double.infinity, 48),
+                elevation: 3,
               ),
               onPressed: () {
                 // Leave gym button functionality
               },
-              child: Text('Leave Gym'),
+              child: Text(
+                'Leave Gym',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],
@@ -130,16 +149,26 @@ class WorkoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? const Color.fromARGB(255, 161, 76, 175) : Colors.white,
-        foregroundColor: isSelected ? Colors.white : Colors.purple,
+        backgroundColor: isSelected ? Theme.of(context).primaryColor : Colors.white,
+        foregroundColor: isSelected ? Colors.white : Theme.of(context).primaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        side: BorderSide(color: Colors.purple),
-        elevation: 0,
+        side: BorderSide(
+          color: Theme.of(context).primaryColor,
+          width: 2,
+        ),
+        elevation: isSelected ? 4 : 0,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
       onPressed: onSelected,
-      child: Text(label),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
