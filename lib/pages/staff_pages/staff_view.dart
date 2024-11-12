@@ -4,8 +4,10 @@ import 'package:test/auth.dart';
 import 'package:test/pages/login_register_page.dart';
 
 class StaffView extends StatefulWidget {
+  const StaffView({super.key});
+
   @override
-  _StaffViewState createState() => _StaffViewState();
+  State<StaffView> createState() => _StaffViewState();
 }
 
 class _StaffViewState extends State<StaffView> {

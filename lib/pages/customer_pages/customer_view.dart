@@ -6,13 +6,13 @@ import 'package:test/pages/login_register_page.dart';
 import 'dart:math';
 
 class CustomerView extends StatefulWidget {
-  CustomerView({Key? key}) : super(key: key);
+  const CustomerView({super.key});
 
   @override
-  _CustomerViewState createState() => _CustomerViewState();
+  CustomerViewState createState() => CustomerViewState();
 }
 
-class _CustomerViewState extends State<CustomerView> {
+class CustomerViewState extends State<CustomerView> {
   final User? user = Auth().currentUser;
   String? generatedEntryCode;
   String? generatedExitCode;

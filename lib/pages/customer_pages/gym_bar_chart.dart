@@ -47,7 +47,7 @@ Future<Map<int, int>> getHourlyEntriesForToday() async {
 
 // Widget to display the chart
 class HourlyEntriesChart extends StatelessWidget {
-  const HourlyEntriesChart({Key? key}) : super(key: key);
+  const HourlyEntriesChart({super.key});
 
   @override
   Widget build(BuildContext context) {

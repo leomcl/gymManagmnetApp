@@ -4,8 +4,10 @@ import 'package:test/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/pages/customer_pages/workout_selection_view.dart';
 
 class CustomerHomeView extends StatefulWidget {
+  const CustomerHomeView({super.key});
+
   @override
-  _CustomerHomeViewState createState() => _CustomerHomeViewState();
+  State<CustomerHomeView> createState() => _CustomerHomeViewState();
 }
 
 class _CustomerHomeViewState extends State<CustomerHomeView> {

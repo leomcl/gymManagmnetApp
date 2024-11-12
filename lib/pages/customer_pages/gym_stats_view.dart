@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'gym_bar_chart.dart';
 
 class GymStatsView extends StatefulWidget {
-  const GymStatsView({Key? key}) : super(key: key);
+  const GymStatsView({super.key});
 
   @override
-  _GymStatsViewState createState() => _GymStatsViewState();
+  GymStatsViewState createState() => GymStatsViewState();
 }
 
-class _GymStatsViewState extends State<GymStatsView> {
+class GymStatsViewState extends State<GymStatsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

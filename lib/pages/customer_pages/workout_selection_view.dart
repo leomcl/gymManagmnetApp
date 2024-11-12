@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class WorkoutSelectionPage extends StatefulWidget {
+  const WorkoutSelectionPage({super.key});
+
   @override
-  _WorkoutSelectionPageState createState() => _WorkoutSelectionPageState();
+  WorkoutSelectionPageState createState() => WorkoutSelectionPageState();
 }
 
-class _WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
+class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   // Tracks the selected status of each workout
   final Map<String, bool> _selectedWorkouts = {
     'Cardio': false,
@@ -118,11 +120,11 @@ class WorkoutButton extends StatelessWidget {
   final VoidCallback onSelected;
 
   const WorkoutButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
