@@ -116,7 +116,7 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
                 try {
                   final userId = FirebaseAuth.instance.currentUser!.uid;
                   final entryTime = DateTime.now();
-                  
+
                   // Calculate duration in minutes
                   final duration = entryTime.difference(entryTime).inMinutes;
 
@@ -128,17 +128,18 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
                     'userId': userId,
                     'entryTime': entryTime,
                     'exitTime': entryTime,
-                    'duration': duration,  // Added duration field
+                    'duration': duration, // Added duration field
                     'workoutTags': _selectedWorkouts,
                     'workoutType': 'regular',
                   });
 
                   // Generate and save exit code
-                  final String exitCode = await AccessCodeGenerator.generateAndSaveCode(
+                  final String exitCode =
+                      await AccessCodeGenerator.generateAndSaveCode(
                     userId: FirebaseAuth.instance.currentUser!.uid,
                     isEntry: false,
                   );
-                  
+
                   // Show dialog with exit code
                   if (context.mounted) {
                     showDialog(
@@ -203,8 +204,10 @@ class WorkoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Theme.of(context).primaryColor : Colors.white,
-        foregroundColor: isSelected ? Colors.white : Theme.of(context).primaryColor,
+        backgroundColor:
+            isSelected ? Theme.of(context).primaryColor : Colors.white,
+        foregroundColor:
+            isSelected ? Colors.white : Theme.of(context).primaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
