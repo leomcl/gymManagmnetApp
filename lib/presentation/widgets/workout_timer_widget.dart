@@ -12,16 +12,16 @@ class WorkoutTimerWidget extends StatelessWidget {
       builder: (context, state) {
         final startTime = state.startTime;
         final Duration duration;
-        
+
         if (startTime != null) {
           duration = DateTime.now().difference(startTime);
         } else {
           duration = const Duration();
         }
-        
+
         final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
         final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 16),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

@@ -4,7 +4,8 @@ import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/auth/auth_state.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
-import 'package:test/presentation/pages/customer/workout_selection_view.dart';
+import 'package:test/presentation/pages/customer_pages/workout_selection_view.dart';
+import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -19,6 +20,72 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   bool isMembershipValid =
       true; // Default to true until we implement membership checks
   bool isLoading = false;
+  int _selectedIndex = 0;
+
+  // Define your pages
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      _buildHomePage(),
+      const WorkoutSelectionPage(),
+      const GymStatsView(),
+      _buildProfilePage(),
+    ];
+  }
+
+  Widget _buildHomePage() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildStatusCard(),
+            const SizedBox(height: 20),
+            _buildCodeSection(),
+            const SizedBox(height: 20),
+            _buildRecentWorkoutsSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfilePage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.person, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              String? email;
+              if (state is Authenticated) {
+                email = state.email;
+              }
+              return Text(
+                email ?? 'User Profile',
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.read<AuthCubit>().signOut();
+            },
+            icon: const Icon(Icons.logout),
+            label: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildStatusCard() {
     return BlocBuilder<AuthCubit, AuthState>(
@@ -191,11 +258,13 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                   const Divider(),
                   const SizedBox(height: 20),
                   if (generatedEntryCode != null)
-                    _buildCodeDisplay('Entry Code', generatedEntryCode!),
+                    _buildCodeDisplay(
+                        'Entry Code', generatedEntryCode!, Colors.green),
                   if (generatedEntryCode != null && generatedExitCode != null)
                     const SizedBox(height: 16),
                   if (generatedExitCode != null)
-                    _buildCodeDisplay('Exit Code', generatedExitCode!),
+                    _buildCodeDisplay(
+                        'Exit Code', generatedExitCode!, Colors.red),
                 ],
               ],
             ),
@@ -205,29 +274,31 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     );
   }
 
-  Widget _buildCodeDisplay(String label, String code) {
+  Widget _buildCodeDisplay(String label, String code, Color color) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[300]!),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.5)),
       ),
       child: Column(
         children: [
           Text(
             label,
             style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
+              color: color,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             code,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: color,
               letterSpacing: 2,
             ),
           ),
@@ -236,27 +307,58 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     );
   }
 
-  Widget _buildWorkoutButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ElevatedButton.icon(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const WorkoutSelectionPage(),
+  // todo: Implement recent workouts section
+  Widget _buildRecentWorkoutsSection() {
+    // This is a placeholder for recent workouts section
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Recent Workouts',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          );
-        },
-        icon: const Icon(Icons.fitness_center),
-        label: const Text('Start Workout Session'),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Colors.white,
+            const SizedBox(height: 16),
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.blue[100],
+                child: const Icon(Icons.fitness_center, color: Colors.blue),
+              ),
+              title: const Text('Full Body Workout'),
+              subtitle: const Text('Yesterday · 45 min'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                // Navigate to workout details
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.green[100],
+                child: const Icon(Icons.directions_run, color: Colors.green),
+              ),
+              title: const Text('Cardio Session'),
+              subtitle: const Text('3 days ago · 30 min'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                // Navigate to workout details
+              },
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                // Navigate to all workouts
+              },
+              child: const Text('View All Workouts'),
+            ),
+          ],
         ),
       ),
     );
@@ -266,35 +368,35 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Gym Access',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              context.read<AuthCubit>().signOut();
-            },
-            tooltip: 'Sign Out',
+        title: const Text('Gym App'),
+      ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed, // This is important for 4+ items
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Workout',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildStatusCard(),
-              const SizedBox(height: 20),
-              _buildCodeSection(),
-              const SizedBox(height: 20),
-              _buildWorkoutButton(),
-            ],
-          ),
-        ),
       ),
     );
   }
