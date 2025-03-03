@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/di/injection_container.dart' as di;
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
+import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<WorkoutCubit>(
           create: (context) => di.sl<WorkoutCubit>(),
+        ),
+        BlocProvider<GymStatsCubit>(
+          create: (context) => di.sl<GymStatsCubit>(),
         ),
       ],
       child: MaterialApp(
