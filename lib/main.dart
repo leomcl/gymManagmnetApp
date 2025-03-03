@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:test/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test/di/injection_container.dart' as di;
+import 'package:test/presentation/cubit/auth/auth_cubit.dart';
+import 'package:test/presentation/cubit/workout/workout_cubit.dart';
+import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 
-
-Future <void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await di.init();
   runApp(const MyApp());
 }
 
@@ -14,12 +19,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthCubit>(
+          create: (context) => di.sl<AuthCubit>(),
+        ),
+        BlocProvider<WorkoutCubit>(
+          create: (context) => di.sl<WorkoutCubit>(),
+        ),
+        BlocProvider<GymStatsCubit>(
+          create: (context) => di.sl<GymStatsCubit>(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Gym App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: const WidgetTree(),
       ),
-      home: const WidgetTree(),
     );
   }
 }
