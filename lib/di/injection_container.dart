@@ -37,6 +37,7 @@ import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
 import 'package:test/domain/repositories/gym_stats_repository.dart';
 import 'package:test/data/repositories/gym_stats_repository_impl.dart';
+import 'package:test/domain/usecases/gym_stats/get_hourly_attendance.dart';
 
 final sl = GetIt.instance;
 
@@ -52,7 +53,10 @@ Future<void> init() async {
       authRepository: sl(),
     ),
   );
-  sl.registerFactory(() => GymStatsCubit(sl()));
+  sl.registerFactory(() => GymStatsCubit(
+        sl<GetCurrentGymOccupancy>(),
+        sl<GetHourlyEntries>(),
+      ));
 
   // Use cases - Auth
   sl.registerLazySingleton(() => SignIn(sl()));
@@ -71,6 +75,7 @@ Future<void> init() async {
 
   // Use cases - Gym Stats
   sl.registerLazySingleton(() => GetCurrentGymOccupancy(sl()));
+  sl.registerLazySingleton(() => GetHourlyEntries(sl()));
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
