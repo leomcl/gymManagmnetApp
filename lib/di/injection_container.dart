@@ -33,7 +33,7 @@ import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 
-// Add this to your dependencies
+// Use cases - Gym Stats
 import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
 import 'package:test/domain/repositories/gym_stats_repository.dart';
 import 'package:test/data/repositories/gym_stats_repository_impl.dart';
