@@ -6,6 +6,8 @@ import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
 import 'package:test/presentation/pages/customer_pages/workout_selection_view.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
+import 'package:get_it/get_it.dart';
+import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -31,7 +33,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     _pages = [
       _buildHomePage(),
       const WorkoutSelectionPage(),
-      const GymStatsView(),
+      BlocProvider(
+        create: (context) => GetIt.I<GymStatsCubit>(),
+        child: const GymStatsView(),
+      ),
       _buildProfilePage(),
     ];
   }
