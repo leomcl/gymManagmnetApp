@@ -31,6 +31,12 @@ import 'package:test/domain/usecases/access_code/validate_access_code.dart';
 // BLoCs
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
+import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
+
+// Add this to your dependencies
+import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
+import 'package:test/domain/repositories/gym_stats_repository.dart';
+import 'package:test/data/repositories/gym_stats_repository_impl.dart';
 
 final sl = GetIt.instance;
 
@@ -46,6 +52,7 @@ Future<void> init() async {
       authRepository: sl(),
     ),
   );
+  sl.registerFactory(() => GymStatsCubit(sl()));
 
   // Use cases - Auth
   sl.registerLazySingleton(() => SignIn(sl()));
@@ -62,11 +69,15 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GenerateAccessCode(sl()));
   sl.registerLazySingleton(() => ValidateAccessCode(sl()));
 
+  // Use cases - Gym Stats
+  sl.registerLazySingleton(() => GetCurrentGymOccupancy(sl()));
+
   // Repositories
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<WorkoutRepository>(() => WorkoutRepositoryImpl());
   sl.registerLazySingleton<AccessCodeRepository>(
       () => AccessCodeRepositoryImpl());
+  sl.registerLazySingleton<GymStatsRepository>(() => GymStatsRepositoryImpl());
 
   // Data sources
   sl.registerLazySingleton(() => FirebaseDataSource(
