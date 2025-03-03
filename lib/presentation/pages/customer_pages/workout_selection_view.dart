@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test/domain/repositories/auth_repository.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
 import 'package:test/presentation/widgets/workout_timer_widget.dart';
@@ -154,19 +153,7 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   }
 
   Future<void> _handleGymExit(BuildContext context) async {
-    final userId = context.read<AuthRepository>().currentUser?.uid;
-
-    if (userId != null) {
-      // First save workout data
-      context.read<WorkoutCubit>().saveWorkout(userId);
-
-      // Then generate exit code
-      context.read<WorkoutCubit>().generateExitCode(userId);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not found')),
-      );
-    }
+    context.read<WorkoutCubit>().handleGymExit();
   }
 
   @override

@@ -2,15 +2,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/domain/repositories/access_code_repository.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
+import 'package:test/domain/repositories/auth_repository.dart';
 
 class WorkoutCubit extends Cubit<WorkoutState> {
   final WorkoutRepository workoutRepository;
   final AccessCodeRepository accessCodeRepository;
+  final AuthRepository _authRepository;
 
   WorkoutCubit({
     required this.workoutRepository,
     required this.accessCodeRepository,
-  }) : super(WorkoutState.initial());
+    required AuthRepository authRepository,
+  })  : _authRepository = authRepository,
+        super(WorkoutState.initial());
 
   void toggleWorkout(String workout) {
     final updatedWorkouts = Map<String, bool>.from(state.selectedWorkouts);
@@ -65,7 +69,8 @@ class WorkoutCubit extends Cubit<WorkoutState> {
     }
   }
 
-  Future<void> generateCode({required String userId, required bool isEntry}) async {
+  Future<void> generateCode(
+      {required String userId, required bool isEntry}) async {
     try {
       emit(state.copyWith(isLoading: true));
 
@@ -92,4 +97,14 @@ class WorkoutCubit extends Cubit<WorkoutState> {
       ));
     }
   }
-} 
+
+  Future<void> handleGymExit() async {
+    final userId = _authRepository.currentUser?.uid;
+    if (userId != null) {
+      saveWorkout(userId);
+      generateExitCode(userId);
+    } else {
+      emit(state.copyWith(errorMessage: 'User not found'));
+    }
+  }
+}

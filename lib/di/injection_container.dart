@@ -36,13 +36,14 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   //! Features
-  
+
   // Cubits
   sl.registerFactory(() => AuthCubit(sl()));
   sl.registerFactory(
     () => WorkoutCubit(
       workoutRepository: sl(),
       accessCodeRepository: sl(),
+      authRepository: sl(),
     ),
   );
 
@@ -64,15 +65,16 @@ Future<void> init() async {
   // Repositories
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<WorkoutRepository>(() => WorkoutRepositoryImpl());
-  sl.registerLazySingleton<AccessCodeRepository>(() => AccessCodeRepositoryImpl());
+  sl.registerLazySingleton<AccessCodeRepository>(
+      () => AccessCodeRepositoryImpl());
 
   // Data sources
   sl.registerLazySingleton(() => FirebaseDataSource(
-    auth: sl(),
-    firestore: sl(),
-  ));
+        auth: sl(),
+        firestore: sl(),
+      ));
 
   //! External
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
-} 
+}
