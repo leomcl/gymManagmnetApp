@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
-import 'package:test/presentation/widgets/workout_timer_widget.dart';
 
 class WorkoutSelectionPage extends StatefulWidget {
   const WorkoutSelectionPage({super.key});
@@ -12,78 +11,56 @@ class WorkoutSelectionPage extends StatefulWidget {
 }
 
 class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
-  // UI Building Methods
-  Widget _buildTimer() {
-    return BlocBuilder<WorkoutCubit, WorkoutState>(
-      builder: (context, state) {
-        final startTime = state.startTime;
-        final Duration duration;
-
-        if (startTime != null) {
-          duration = DateTime.now().difference(startTime);
-        } else {
-          duration = const Duration();
-        }
-
-        final minutes =
-            duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-        final seconds =
-            duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.timer, color: Theme.of(context).primaryColor),
-              const SizedBox(width: 8),
-              Text(
-                'Duration: $minutes:$seconds',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildWorkoutGrid() {
     return BlocBuilder<WorkoutCubit, WorkoutState>(
       builder: (context, state) {
-        return Expanded(
+        return Card(
+          elevation: 4,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 3,
-              children: state.selectedWorkouts.entries.map((entry) {
-                return WorkoutButton(
-                  label: entry.key,
-                  isSelected: entry.value,
-                  onSelected: () {
-                    context.read<WorkoutCubit>().toggleWorkout(entry.key);
-                  },
-                );
-              }).toList(),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.fitness_center,
+                      color: Theme.of(context).primaryColor,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'Available Exercises',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 220,
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 3,
+                    children: state.selectedWorkouts.entries.map((entry) {
+                      return WorkoutButton(
+                        label: entry.key,
+                        isSelected: entry.value,
+                        onSelected: () {
+                          context.read<WorkoutCubit>().toggleWorkout(entry.key);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -94,10 +71,6 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   Widget _buildLeaveButton() {
     return BlocConsumer<WorkoutCubit, WorkoutState>(
       listener: (context, state) {
-        if (state.exitCode != null) {
-          _showExitCodeDialog(state.exitCode!);
-        }
-
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
@@ -105,29 +78,59 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
         }
       },
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red[400],
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              minimumSize: const Size(double.infinity, 48),
-              elevation: 3,
-            ),
-            onPressed: state.isLoading ? null : () => _handleGymExit(context),
-            child: state.isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    'Leave Gym',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+        return Card(
+          elevation: 4,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.exit_to_app,
+                      color: Colors.red[400],
+                      size: 28,
                     ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'Finish Workout',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
+                    elevation: 2,
                   ),
+                  onPressed:
+                      state.isLoading ? null : () => _handleGymExit(context),
+                  child: state.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Leave Gym',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -140,7 +143,34 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Exit Code'),
-          content: Text('Your exit code is: $exitCode'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Use this code at the exit gate:'),
+              const SizedBox(height: 16),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Text(
+                  exitCode,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -153,7 +183,15 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   }
 
   Future<void> _handleGymExit(BuildContext context) async {
-    context.read<WorkoutCubit>().handleGymExit();
+    final workoutCubit = context.read<WorkoutCubit>();
+    await workoutCubit.handleGymExit();
+
+    final state = workoutCubit.state;
+    if (state.exitCode != null) {
+      if (mounted) {
+        _showExitCodeDialog(state.exitCode!);
+      }
+    }
   }
 
   @override
@@ -161,35 +199,8 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     return BlocProvider.value(
       value: context.read<WorkoutCubit>(),
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 56,
-          backgroundColor: Theme.of(context).primaryColor,
-          title: const Text(
-            "Today's Workout",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          centerTitle: true,
-          elevation: 2,
-        ),
         body: Column(
           children: [
-            const Center(child: WorkoutTimerWidget()),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Text(
-                'Select Your Workout',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
             _buildWorkoutGrid(),
             _buildLeaveButton(),
           ],
@@ -199,7 +210,6 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   }
 }
 
-// Keep WorkoutButton as is
 class WorkoutButton extends StatelessWidget {
   final String label;
   final bool isSelected;
@@ -221,13 +231,13 @@ class WorkoutButton extends StatelessWidget {
         foregroundColor:
             isSelected ? Colors.white : Theme.of(context).primaryColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(12),
         ),
         side: BorderSide(
           color: Theme.of(context).primaryColor,
-          width: 2,
+          width: 1.5,
         ),
-        elevation: isSelected ? 4 : 0,
+        elevation: isSelected ? 2 : 0,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
       onPressed: onSelected,
