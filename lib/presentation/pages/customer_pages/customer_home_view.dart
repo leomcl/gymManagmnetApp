@@ -236,21 +236,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: isLoading || !isMembershipValid
-                            ? null
-                            : () => _generateCode(context, false),
-                        icon: const Icon(Icons.logout),
-                        label: const Text('Exit Code'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 if (isLoading) ...[
