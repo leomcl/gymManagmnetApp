@@ -86,4 +86,10 @@ class FirebaseDataSource {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>?> getUserDoc(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    if (!doc.exists) return null;
+    return doc.data() as Map<String, dynamic>;
+  }
 } 
