@@ -8,6 +8,7 @@ abstract class AccessCodeRepository {
   Future<String> generateAccessCode({
     required String userId,
     required bool isEntry,
+    Duration? expiry,
   });
 
   /// Validates an access code
@@ -27,4 +28,11 @@ abstract class AccessCodeRepository {
   ///
   /// Returns true if the user is in the gym, false otherwise
   Future<bool> isUserInGym({required String userId});
+
+  /// Gets the user ID associated with an access code
+  ///
+  /// [code] is the access code to lookup
+  ///
+  /// Returns the userId if found, null otherwise
+  Future<String?> getUserIdFromCode(String code);
 }
