@@ -18,6 +18,7 @@ import 'package:test/domain/usecases/auth/sign_in.dart';
 import 'package:test/domain/usecases/auth/sign_up.dart';
 import 'package:test/domain/usecases/auth/sign_out.dart';
 import 'package:test/domain/usecases/auth/get_user_role.dart';
+import 'package:test/domain/usecases/auth/get_current_user.dart';
 
 // Use cases - Workout
 import 'package:test/domain/usecases/workout/record_workout.dart';
@@ -51,6 +52,9 @@ Future<void> init() async {
       workoutRepository: sl(),
       accessCodeRepository: sl(),
       authRepository: sl(),
+      recordWorkoutUseCase: sl(),
+      generateAccessCodeUseCase: sl(),
+      getCurrentUserUseCase: sl(),
     ),
   );
   sl.registerFactory(() => GymStatsCubit(
@@ -63,14 +67,17 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignUp(sl()));
   sl.registerLazySingleton(() => SignOut(sl()));
   sl.registerLazySingleton(() => GetUserRole(sl()));
+  sl.registerLazySingleton(() => GetCurrentUser(sl()));
 
   // Use cases - Workout
-  sl.registerLazySingleton(() => RecordWorkout(sl()));
+  sl.registerLazySingleton(
+      () => RecordWorkout(sl<WorkoutRepository>(), sl<AccessCodeRepository>()));
   sl.registerLazySingleton(() => GetWorkoutHistory(sl()));
   sl.registerLazySingleton(() => GetCurrentWorkout(sl()));
 
   // Use cases - Access Code
-  sl.registerLazySingleton(() => GenerateAccessCode(sl()));
+  sl.registerLazySingleton(() =>
+      GenerateAccessCode(sl<AccessCodeRepository>(), sl<AuthRepository>()));
   sl.registerLazySingleton(() => ValidateAccessCode(sl()));
 
   // Use cases - Gym Stats
