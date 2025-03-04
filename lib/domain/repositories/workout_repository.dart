@@ -5,11 +5,13 @@ abstract class WorkoutRepository {
   /// [workoutTags] is a map of workout types and whether they were performed
   /// [entryTime] is when the user entered the gym
   /// [exitTime] is when the user exited the gym
+  /// [workoutType] is the type of workout
   Future<void> recordWorkout({
     required String userId,
     required Map<String, bool> workoutTags,
     required DateTime entryTime,
     required DateTime exitTime,
+    required String workoutType,
   });
 
   /// Retrieves workout history for a specific user
