@@ -12,7 +12,7 @@ class AccessCodeRepositoryImpl implements AccessCodeRepository {
   Future<String> generateAccessCode({
     required String userId,
     required bool isEntry,
-    Duration expiry = const Duration(hours: 1),
+    Duration? expiry,
   }) async {
     final Random random = Random();
     String code;
@@ -24,7 +24,8 @@ class AccessCodeRepositoryImpl implements AccessCodeRepository {
       code = ((random.nextInt(450000) * 2) + 100001).toString(); // Odd number
     }
 
-    final DateTime expiryTime = DateTime.now().add(expiry);
+    final DateTime expiryTime =
+        DateTime.now().add(expiry ?? const Duration(hours: 1));
 
     await _firestore.collection('gymAccessCodes').doc(code).set({
       'userId': userId,
@@ -75,13 +76,28 @@ class AccessCodeRepositoryImpl implements AccessCodeRepository {
     try {
       // Check if userId exists in the userInGym collection
       DocumentSnapshot doc =
-          await _firestore.collection('userInGym').doc(userId).get();
+          await _firestore.collection('usersInGym').doc(userId).get();
 
       // Return true if the document exists
       return doc.exists;
     } catch (e) {
       print('Error checking if user is in gym: $e');
       return false;
+    }
+  }
+
+  @override
+  Future<String?> getUserIdFromCode(String code) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('gymAccessCodes').doc(code).get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>;
+      return data['userId'] as String?;
+    } catch (e) {
+      print('Error getting user ID from code: $e');
+      return null;
     }
   }
 }

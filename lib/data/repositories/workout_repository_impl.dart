@@ -13,6 +13,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     required Map<String, bool> workoutTags,
     required DateTime entryTime,
     required DateTime exitTime,
+    required String workoutType,
   }) async {
     final duration = exitTime.difference(entryTime).inMinutes;
     
@@ -25,7 +26,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       'exitTime': exitTime,
       'duration': duration,
       'workoutTags': workoutTags,
-      'workoutType': 'regular',
+      'workoutType': workoutType,
     });
   }
   
