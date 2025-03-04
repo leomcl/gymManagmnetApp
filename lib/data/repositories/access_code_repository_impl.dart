@@ -69,4 +69,19 @@ class AccessCodeRepositoryImpl implements AccessCodeRepository {
       return false;
     }
   }
+
+  @override
+  Future<bool> isUserInGym({required String userId}) async {
+    try {
+      // Check if userId exists in the userInGym collection
+      DocumentSnapshot doc =
+          await _firestore.collection('userInGym').doc(userId).get();
+
+      // Return true if the document exists
+      return doc.exists;
+    } catch (e) {
+      print('Error checking if user is in gym: $e');
+      return false;
+    }
+  }
 }
