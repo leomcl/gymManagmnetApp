@@ -1,29 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test/domain/repositories/access_code_repository.dart';
-import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
-import 'package:test/domain/repositories/auth_repository.dart';
 import 'package:test/domain/usecases/workout/record_workout.dart';
 import 'package:test/domain/usecases/access_code/generate_access_code.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
 
 class WorkoutCubit extends Cubit<WorkoutState> {
-  final WorkoutRepository workoutRepository;
-  final AccessCodeRepository accessCodeRepository;
-  final AuthRepository _authRepository;
   final RecordWorkout recordWorkoutUseCase;
   final GenerateAccessCode generateAccessCodeUseCase;
   final GetCurrentUser getCurrentUserUseCase;
 
   WorkoutCubit({
-    required this.workoutRepository,
-    required this.accessCodeRepository,
-    required AuthRepository authRepository,
     required this.recordWorkoutUseCase,
     required this.generateAccessCodeUseCase,
     required this.getCurrentUserUseCase,
-  })  : _authRepository = authRepository,
-        super(WorkoutState.initial());
+  }) : super(WorkoutState.initial());
 
   void toggleWorkout(String workout) {
     final updatedWorkouts = Map<String, bool>.from(state.selectedWorkouts);

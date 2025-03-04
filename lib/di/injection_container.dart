@@ -49,9 +49,6 @@ Future<void> init() async {
   sl.registerFactory(() => AuthCubit(sl()));
   sl.registerFactory(
     () => WorkoutCubit(
-      workoutRepository: sl(),
-      accessCodeRepository: sl(),
-      authRepository: sl(),
       recordWorkoutUseCase: sl(),
       generateAccessCodeUseCase: sl(),
       getCurrentUserUseCase: sl(),
