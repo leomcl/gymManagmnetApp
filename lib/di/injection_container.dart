@@ -19,6 +19,7 @@ import 'package:test/domain/usecases/auth/sign_up.dart';
 import 'package:test/domain/usecases/auth/sign_out.dart';
 import 'package:test/domain/usecases/auth/get_user_role.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
+import 'package:test/domain/usecases/auth/get_auth_state_changes.dart';
 
 // Use cases - Workout
 import 'package:test/domain/usecases/workout/record_workout.dart';
@@ -46,7 +47,14 @@ Future<void> init() async {
   //! Features
 
   // Cubits
-  sl.registerFactory(() => AuthCubit(sl()));
+  sl.registerFactory(() => AuthCubit(
+        signInUseCase: sl(),
+        signUpUseCase: sl(),
+        signOutUseCase: sl(),
+        getUserRoleUseCase: sl(),
+        getCurrentUserUseCase: sl(),
+        getAuthStateChangesUseCase: sl(),
+      ));
   sl.registerFactory(
     () => WorkoutCubit(
       recordWorkoutUseCase: sl(),
@@ -65,6 +73,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignOut(sl()));
   sl.registerLazySingleton(() => GetUserRole(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
+  sl.registerLazySingleton(() => GetAuthStateChanges(sl()));
 
   // Use cases - Workout
   sl.registerLazySingleton(
