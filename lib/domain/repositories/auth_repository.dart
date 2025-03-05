@@ -2,7 +2,7 @@ import 'package:test/domain/entities/user.dart';
 
 abstract class AuthRepository {
   Stream<User?> get authStateChanges;
-  User? get currentUser;
+  Future<User?> get currentUser;
   
   Future<void> signInWithEmailAndPassword(String email, String password);
   Future<void> createUserWithEmailAndPassword(
@@ -10,4 +10,4 @@ abstract class AuthRepository {
   Future<void> signOut();
   Future<String?> getUserRole();
   Future<User?> getUserById(String userId);
-} 
+}   
