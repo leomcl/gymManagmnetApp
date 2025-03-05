@@ -12,7 +12,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Stream<User?> get authStateChanges => dataSource.authStateChanges;
 
   @override
-  User? get currentUser => dataSource.currentUser;
+  Future<User?> get currentUser => dataSource.currentUser;
 
   @override
   Future<void> createUserWithEmailAndPassword(
