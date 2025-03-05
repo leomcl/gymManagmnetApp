@@ -13,12 +13,12 @@ class UserModel extends User {
           membershipStatus: membershipStatus,
         );
 
-  factory UserModel.fromFirebaseUser(dynamic firebaseUser, {String? role, bool membershipStatus = false}) {
+  factory UserModel.fromFirebaseUser(dynamic firebaseUser, {String? role, bool? membershipStatus}) {
     return UserModel(
       uid: firebaseUser.uid,
       email: firebaseUser.email ?? '',
       role: role,
-      membershipStatus: membershipStatus,
+      membershipStatus: membershipStatus ?? false,
     );
   }
 
