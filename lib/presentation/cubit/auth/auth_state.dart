@@ -15,15 +15,17 @@ class Authenticated extends AuthState {
   final String userId;
   final String role;
   final String email;
+  final bool membershipStatus;
 
   const Authenticated({
     required this.userId,
     required this.role,
     required this.email,
+    required this.membershipStatus,
   });
 
   @override
-  List<Object?> get props => [userId, role, email];
+  List<Object?> get props => [userId, role, email, membershipStatus];
 }
 
 class Unauthenticated extends AuthState {}

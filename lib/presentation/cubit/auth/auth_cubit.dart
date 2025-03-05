@@ -51,6 +51,7 @@ class AuthCubit extends Cubit<AuthState> {
           userId: user.uid,
           role: role ?? 'unknown',
           email: user.email,
+          membershipStatus: user.membershipStatus,
         ));
       } else {
         emit(Unauthenticated());
