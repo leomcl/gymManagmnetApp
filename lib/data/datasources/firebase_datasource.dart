@@ -17,30 +17,41 @@ class FirebaseDataSource {
       if (firebaseUser == null) {
         return null;
       }
-      
-      DocumentSnapshot doc = await _firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .get();
-          
+
+      DocumentSnapshot doc =
+          await _firestore.collection('users').doc(firebaseUser.uid).get();
+
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         return UserModel.fromFirebaseUser(
           firebaseUser,
           role: data['role'],
-          membershipStatus: data['membershipStatus'] ?? false,
+          membershipStatus: data['membershipStatus'],
         );
       }
-      
+
       return UserModel.fromFirebaseUser(firebaseUser);
     });
   }
 
-  UserModel? get currentUser {
+  Future<UserModel?> get currentUser async {
     final firebaseUser = _auth.currentUser;
     if (firebaseUser == null) {
       return null;
     }
+
+    DocumentSnapshot doc =
+        await _firestore.collection('users').doc(firebaseUser.uid).get();
+
+    if (doc.exists) {
+      final data = doc.data() as Map<String, dynamic>;
+      return UserModel.fromFirebaseUser(
+        firebaseUser,
+        role: data['role'],
+        membershipStatus: data['membershipStatus'],
+      );
+    }
+
     return UserModel.fromFirebaseUser(firebaseUser);
   }
 
@@ -57,7 +68,7 @@ class FirebaseDataSource {
       email: email,
       password: password,
     );
-    
+
     final user = userCredential.user;
     if (user != null) {
       await _firestore.collection('users').doc(user.uid).set({
@@ -75,10 +86,8 @@ class FirebaseDataSource {
   Future<String?> getUserRole() async {
     final user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot doc = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      DocumentSnapshot doc =
+          await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         return data['role'] as String?;
@@ -92,4 +101,4 @@ class FirebaseDataSource {
     if (!doc.exists) return null;
     return doc.data() as Map<String, dynamic>;
   }
-} 
+}
