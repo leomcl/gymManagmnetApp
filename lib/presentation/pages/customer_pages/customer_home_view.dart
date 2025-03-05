@@ -8,6 +8,7 @@ import 'package:test/presentation/pages/customer_pages/workout_selection_view.da
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
+import 'dart:developer';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -19,8 +20,6 @@ class CustomerHomeView extends StatefulWidget {
 class _CustomerHomeViewState extends State<CustomerHomeView> {
   String? generatedEntryCode;
   String? generatedExitCode;
-  bool isMembershipValid =
-      true; // Default to true until we implement membership checks
   bool isLoading = false;
   int _selectedIndex = 0;
 
@@ -96,9 +95,11 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         String? email;
-
+        bool isMembershipValid = false;
         if (state is Authenticated) {
           email = state.email;
+          isMembershipValid = state.membershipStatus;
+          log(state.toString());
         }
 
         return Card(
@@ -210,6 +211,13 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         }
       },
       builder: (context, state) {
+        // Get membership status from auth state
+        bool isMembershipValid = false;
+        final authState = context.read<AuthCubit>().state;
+        if (authState is Authenticated) {
+          isMembershipValid = authState.membershipStatus;
+        }
+
         return Card(
           elevation: 4,
           shape:
