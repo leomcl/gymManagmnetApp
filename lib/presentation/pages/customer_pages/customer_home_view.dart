@@ -4,7 +4,7 @@ import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/auth/auth_state.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
-import 'package:test/presentation/pages/customer_pages/workout_selection_view.dart';
+import 'package:test/presentation/pages/customer_pages/workout_sats_view.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
