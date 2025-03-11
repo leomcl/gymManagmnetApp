@@ -38,7 +38,7 @@ class GymStatsCubit extends Cubit<GymStatsState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final hourlyData = await _getHourlyEntries(daysBack: 6);
+      final hourlyData = await _getHourlyEntries(daysBack: 7);
       emit(state.copyWith(
         isLoading: false,
         hourlyAttendance: hourlyData,
