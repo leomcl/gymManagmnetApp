@@ -35,6 +35,7 @@ import 'package:test/domain/usecases/access_code/is_user_in_gym.dart';
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
+import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
 
 // Use cases - Gym Stats
 import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
@@ -68,6 +69,12 @@ Future<void> init() async {
         sl<GetCurrentGymOccupancy>(),
         sl<GetHourlyEntries>(),
       ));
+  sl.registerFactory(
+    () => WorkoutStatsCubit(
+      workoutRepository: sl<WorkoutRepository>(),
+      getCurrentUser: sl<GetCurrentUser>(),
+    ),
+  );
 
   // Use cases - Auth
   sl.registerLazySingleton(() => SignIn(sl()));

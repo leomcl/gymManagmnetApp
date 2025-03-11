@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test/presentation/cubit/workout/workout_cubit.dart';
-import 'package:test/presentation/cubit/workout/workout_state.dart';
+import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
+import 'package:intl/intl.dart';
+import 'package:test/di/injection_container.dart' as di;
 
 class WorkoutSelectionPage extends StatefulWidget {
   const WorkoutSelectionPage({super.key});
@@ -11,243 +12,170 @@ class WorkoutSelectionPage extends StatefulWidget {
 }
 
 class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
-  Widget _buildWorkoutGrid() {
-    return BlocBuilder<WorkoutCubit, WorkoutState>(
-      builder: (context, state) {
-        return Card(
-          elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.fitness_center,
-                      color: Theme.of(context).primaryColor,
-                      size: 28,
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Available Exercises',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 220,
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 3,
-                    children: state.selectedWorkouts.entries.map((entry) {
-                      return WorkoutButton(
-                        label: entry.key,
-                        isSelected: entry.value,
-                        onSelected: () {
-                          context.read<WorkoutCubit>().toggleWorkout(entry.key);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => di.sl<WorkoutStatsCubit>()..loadWorkoutHistory(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Workout History'),
+        ),
+        body: BlocBuilder<WorkoutStatsCubit, WorkoutStatsState>(
+          builder: (context, state) {
+            switch (state.status) {
+              case WorkoutStatsStatus.initial:
+              case WorkoutStatsStatus.loading:
+                return const Center(child: CircularProgressIndicator());
 
-  Widget _buildLeaveButton() {
-    return BlocConsumer<WorkoutCubit, WorkoutState>(
-      listener: (context, state) {
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Card(
-          elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.exit_to_app,
-                      color: Colors.red[400],
-                      size: 28,
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Finish Workout',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[400],
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    minimumSize: const Size(double.infinity, 48),
-                    elevation: 2,
-                  ),
-                  onPressed:
-                      state.isLoading ? null : () => _handleGymExit(context),
-                  child: state.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Leave Gym',
+              case WorkoutStatsStatus.failure:
+                return Center(
+                  child: Text('Error: ${state.error ?? "Unknown error"}'),
+                );
+
+              case WorkoutStatsStatus.success:
+                if (state.workouts.isEmpty) {
+                  return const Center(
+                    child: Text('No workout history available'),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildWorkoutStats(state.workouts),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Recent Workouts',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        _buildWorkoutList(state.workouts),
+                      ],
+                    ),
+                  ),
+                );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorkoutStats(List<Map<String, dynamic>> workouts) {
+    final totalWorkouts = workouts.length;
+    final totalMinutes = workouts.fold<int>(
+      0,
+      (sum, workout) => sum + (workout['duration'] as int),
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Summary',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem('Total Workouts', totalWorkouts.toString()),
+                _buildStatItem(
+                  'Total Time',
+                  '${(totalMinutes / 60).toStringAsFixed(1)} hours',
+                ),
+                _buildStatItem(
+                  'Avg. Duration',
+                  '${(totalMinutes / totalWorkouts).toStringAsFixed(0)} min',
                 ),
               ],
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
-  void _showExitCodeDialog(String exitCode) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Exit Code'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Use this code at the exit gate:'),
-              const SizedBox(height: 16),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Text(
-                  exitCode,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
-            ],
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWorkoutList(List<Map<String, dynamic>> workouts) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: workouts.length,
+      itemBuilder: (context, index) {
+        final workout = workouts[index];
+        final entryTime = workout['entryTime'] as DateTime;
+        final duration = workout['duration'] as int;
+        final workoutType = workout['workoutType'] as String;
+
+        final workoutTags = workout['workoutTags'] is Map
+            ? (workout['workoutTags'] as Map)
+                .entries
+                .where((e) => e.value == true)
+                .map((e) => e.key.toString())
+                .toList()
+            : <String>[];
+
+        return Card(
+          margin: const EdgeInsets.only(bottom: 8.0),
+          child: ListTile(
+            title: Text(
+              workoutType,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-          ],
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(DateFormat('MMM d, y - h:mm a').format(entryTime)),
+                Text('Duration: $duration minutes'),
+                if (workoutTags.isNotEmpty)
+                  Wrap(
+                    spacing: 4,
+                    children: workoutTags
+                        .map((tag) => Chip(
+                              label: Text(tag),
+                              labelStyle: const TextStyle(fontSize: 12),
+                            ))
+                        .toList(),
+                  ),
+              ],
+            ),
+            isThreeLine: true,
+          ),
         );
       },
-    );
-  }
-
-  Future<void> _handleGymExit(BuildContext context) async {
-    final workoutCubit = context.read<WorkoutCubit>();
-    await workoutCubit.handleGymExit();
-
-    final state = workoutCubit.state;
-    if (state.exitCode != null) {
-      if (mounted) {
-        _showExitCodeDialog(state.exitCode!);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: context.read<WorkoutCubit>(),
-      child: Scaffold(
-        body: Column(
-          children: [
-            _buildWorkoutGrid(),
-            _buildLeaveButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class WorkoutButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onSelected;
-
-  const WorkoutButton({
-    super.key,
-    required this.label,
-    required this.isSelected,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor:
-            isSelected ? Theme.of(context).primaryColor : Colors.white,
-        foregroundColor:
-            isSelected ? Colors.white : Theme.of(context).primaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        side: BorderSide(
-          color: Theme.of(context).primaryColor,
-          width: 1.5,
-        ),
-        elevation: isSelected ? 2 : 0,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      onPressed: onSelected,
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 }
