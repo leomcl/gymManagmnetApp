@@ -130,52 +130,149 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
   }
 
   Widget _buildWorkoutList(List<Map<String, dynamic>> workouts) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: workouts.length,
-      itemBuilder: (context, index) {
-        final workout = workouts[index];
-        final entryTime = workout['entryTime'] as DateTime;
-        final duration = workout['duration'] as int;
-        final workoutType = workout['workoutType'] as String;
-
-        final workoutTags = workout['workoutTags'] is Map
-            ? (workout['workoutTags'] as Map)
-                .entries
-                .where((e) => e.value == true)
-                .map((e) => e.key.toString())
-                .toList()
-            : <String>[];
-
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            title: Text(
-              workoutType,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(DateFormat('MMM d, y - h:mm a').format(entryTime)),
-                Text('Duration: $duration minutes'),
-                if (workoutTags.isNotEmpty)
-                  Wrap(
-                    spacing: 4,
-                    children: workoutTags
-                        .map((tag) => Chip(
-                              label: Text(tag),
-                              labelStyle: const TextStyle(fontSize: 12),
-                            ))
-                        .toList(),
-                  ),
-              ],
-            ),
-            isThreeLine: true,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int index = 0; index < workouts.length; index++) ...[
+          _buildWorkoutItem(workouts[index]),
+          if (index < workouts.length - 1) const Divider(),
+        ],
+        const SizedBox(height: 12),
+        Center(
+          child: TextButton(
+            onPressed: () {
+              // Navigate to detailed workout history
+            },
+            child: const Text('View Complete History'),
           ),
-        );
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWorkoutItem(Map<String, dynamic> workout) {
+    final entryTime = workout['entryTime'] as DateTime;
+    final duration = workout['duration'] as int;
+    final workoutType = workout['workoutType'] as String;
+    final now = DateTime.now();
+    final difference = now.difference(entryTime);
+
+    // Format relative time
+    String relativeTime;
+    if (difference.inDays == 0) {
+      relativeTime = 'Today';
+    } else if (difference.inDays == 1) {
+      relativeTime = 'Yesterday';
+    } else if (difference.inDays < 7) {
+      relativeTime = '${difference.inDays} days ago';
+    } else {
+      relativeTime = DateFormat('MMM d').format(entryTime);
+    }
+
+    // Get icon based on workout type
+    IconData workoutIcon;
+    Color iconColor;
+    Color bgColor;
+
+    switch (workoutType.toLowerCase()) {
+      case 'cardio':
+        workoutIcon = Icons.directions_run;
+          iconColor = Colors.green;
+          bgColor = Colors.green[100]!;
+          break;
+      case 'running':
+      case 'jogging':
+        workoutIcon = Icons.directions_run;
+        iconColor = Colors.green;
+        bgColor = Colors.green[100]!;
+        break;
+      case 'strength':
+        workoutIcon = Icons.fitness_center;
+          iconColor = Colors.blue;
+          bgColor = Colors.blue[100]!;
+          break;
+      case 'weight training':
+        workoutIcon = Icons.fitness_center;
+          iconColor = Colors.blue;
+          bgColor = Colors.blue[100]!;
+          break;
+      case 'bodybuilding':
+        workoutIcon = Icons.fitness_center;
+        iconColor = Colors.blue;
+        bgColor = Colors.blue[100]!;
+        break;
+      case 'yoga':
+      case 'stretching':
+      case 'flexibility':
+        workoutIcon = Icons.self_improvement;
+        iconColor = Colors.purple;
+        bgColor = Colors.purple[100]!;
+        break;
+      case 'swimming':
+        workoutIcon = Icons.pool;
+        iconColor = Colors.cyan;
+        bgColor = Colors.cyan[100]!;
+        break;
+      case 'cycling':
+      case 'biking':
+        workoutIcon = Icons.directions_bike;
+        iconColor = Colors.orange;
+        bgColor = Colors.orange[100]!;
+        break;
+      default:
+        workoutIcon = Icons.sports;
+        iconColor = Colors.indigo;
+        bgColor = Colors.indigo[100]!;
+    }
+
+    // Get workout tags
+    final workoutTags = workout['workoutTags'] is Map
+        ? (workout['workoutTags'] as Map)
+            .entries
+            .where((e) => e.value == true)
+            .map((e) => e.key.toString())
+            .toList()
+        : <String>[];
+
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: bgColor,
+        child: Icon(workoutIcon, color: iconColor),
+      ),
+      title: Text(
+        workoutType,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$relativeTime · $duration min'),
+          if (workoutTags.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Wrap(
+                spacing: 4,
+                children: workoutTags
+                    .map((tag) => Chip(
+                          label: Text(tag),
+                          labelStyle: const TextStyle(fontSize: 10),
+                          padding: const EdgeInsets.all(0),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ))
+                    .toList(),
+              ),
+            ),
+        ],
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        // Navigate to workout details
       },
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+      isThreeLine: workoutTags.isNotEmpty,
     );
   }
 }
