@@ -5,7 +5,7 @@ class GetHourlyEntries {
 
   GetHourlyEntries(this.repository);
 
-  Future<Map<int, int>> call() {
-    return repository.getHourlyAttendanceForToday();
+  Future<Map<int, int>> call({int daysBack = 0}) {
+    return repository.getHourlyAttendanceForToday(daysBack: daysBack);
   }
-} 
+}

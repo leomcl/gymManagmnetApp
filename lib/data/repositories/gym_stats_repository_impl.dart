@@ -23,16 +23,18 @@ class GymStatsRepositoryImpl implements GymStatsRepository {
   }
 
   @override
-  Future<Map<int, int>> getHourlyAttendanceForToday() async {
-    final String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  Future<Map<int, int>> getHourlyAttendanceForToday({int daysBack = 0}) async {
+    final DateTime targetDate =
+        DateTime.now().subtract(Duration(days: daysBack));
+    final String dateString = DateFormat('yyyy-MM-dd').format(targetDate);
 
     try {
       final CollectionReference statsCollection =
           _firestore.collection('gymHourlyStats');
 
       QuerySnapshot snapshot = await statsCollection
-          .where(FieldPath.documentId, isGreaterThanOrEqualTo: currentDate)
-          .where(FieldPath.documentId, isLessThan: '$currentDate\uFFFF')
+          .where(FieldPath.documentId, isGreaterThanOrEqualTo: dateString)
+          .where(FieldPath.documentId, isLessThan: '$dateString\uFFFF')
           .get();
 
       Map<int, int> hourlyPeopleCount = {for (int i = 0; i < 24; i++) i: 0};
