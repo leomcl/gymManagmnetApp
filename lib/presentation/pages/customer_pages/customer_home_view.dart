@@ -38,6 +38,14 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
       ),
       _buildProfilePage(),
     ];
+
+    // Check gym status when view initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authState = context.read<AuthCubit>().state;
+      if (authState is Authenticated) {
+        context.read<WorkoutCubit>().checkGymStatus();
+      }
+    });
   }
 
   Widget _buildHomePage() {
@@ -186,122 +194,169 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
 
   Widget _buildCodeSection() {
     return BlocConsumer<WorkoutCubit, WorkoutState>(
+      listenWhen: (previous, current) =>
+          previous.entryCode != current.entryCode ||
+          previous.exitCode != current.exitCode,
       listener: (context, state) {
-        if (state.entryCode != null) {
-          setState(() {
-            generatedEntryCode = state.entryCode;
-            isLoading = false;
-          });
-        }
+        setState(() {
+          isLoading = false;
+        });
 
         if (state.exitCode != null) {
-          setState(() {
-            generatedExitCode = state.exitCode;
-            isLoading = false;
-          });
-        }
-
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
-          setState(() {
-            isLoading = false;
-          });
+          _showCodeDialog('Exit Code', state.exitCode!, Colors.red);
+        } else if (state.entryCode != null) {
+          _showCodeDialog('Entry Code', state.entryCode!, Colors.green);
         }
       },
       builder: (context, state) {
         // Get membership status from auth state
         bool isMembershipValid = false;
         final authState = context.read<AuthCubit>().state;
+        String? userId;
         if (authState is Authenticated) {
           isMembershipValid = authState.membershipStatus;
+          userId = authState.userId;
         }
 
-        return Card(
-          elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
+        return FutureBuilder<bool>(
+          future: userId != null
+              ? context.read<WorkoutCubit>().isUserInGymUseCase(userId: userId)
+              : Future.value(false),
+          builder: (context, snapshot) {
+            final isInGym = snapshot.data ?? false;
+
+            return Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
+                    if (!isInGym) ...[
+                      ElevatedButton.icon(
                         onPressed: isLoading || !isMembershipValid
                             ? null
                             : () => _generateCode(context, true),
                         icon: const Icon(Icons.login),
-                        label: const Text('Entry Code'),
+                        label: const Text('Enter Gym'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(16),
+                          minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
+                    ] else ...[
+                      // Workout Selection Section
+                      const Text(
+                        'Select Your Workouts',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 220,
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 3,
+                          children: state.selectedWorkouts.entries.map((entry) {
+                            return WorkoutButton(
+                              label: entry.key,
+                              isSelected: entry.value,
+                              onSelected: () {
+                                context
+                                    .read<WorkoutCubit>()
+                                    .toggleWorkout(entry.key);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red[400],
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed:
+                            isLoading ? null : () => _handleGymExit(context),
+                        icon: const Icon(Icons.exit_to_app),
+                        label: const Text('Leave Gym'),
+                      ),
+                    ],
+                    if (isLoading) ...[
+                      const SizedBox(height: 20),
+                      const Center(child: CircularProgressIndicator()),
+                    ],
                   ],
                 ),
-                if (isLoading) ...[
-                  const SizedBox(height: 20),
-                  const Center(child: CircularProgressIndicator()),
-                ],
-                if (generatedEntryCode != null ||
-                    generatedExitCode != null) ...[
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  const SizedBox(height: 20),
-                  if (generatedEntryCode != null)
-                    _buildCodeDisplay(
-                        'Entry Code', generatedEntryCode!, Colors.green),
-                  if (generatedEntryCode != null && generatedExitCode != null)
-                    const SizedBox(height: 16),
-                  if (generatedExitCode != null)
-                    _buildCodeDisplay(
-                        'Exit Code', generatedExitCode!, Colors.red),
-                ],
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildCodeDisplay(String label, String code, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.5)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+  Future<void> _handleGymExit(BuildContext context) async {
+    final workoutCubit = context.read<WorkoutCubit>();
+    await workoutCubit.handleGymExit();
+  }
+
+  void _showCodeDialog(String title, String code, Color color) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Use this code at the gate:'),
+              const SizedBox(height: 16),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: color),
+                ),
+                child: Text(
+                  code,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                    letterSpacing: 4,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            code,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
-              letterSpacing: 2,
-            ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 

@@ -3,17 +3,36 @@ import 'package:test/presentation/cubit/workout/workout_state.dart';
 import 'package:test/domain/usecases/workout/record_workout.dart';
 import 'package:test/domain/usecases/access_code/generate_access_code.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
+import 'package:test/domain/usecases/access_code/is_user_in_gym.dart';
 
 class WorkoutCubit extends Cubit<WorkoutState> {
   final RecordWorkout recordWorkoutUseCase;
   final GenerateAccessCode generateAccessCodeUseCase;
   final GetCurrentUser getCurrentUserUseCase;
+  final IsUserInGym isUserInGymUseCase;
 
   WorkoutCubit({
     required this.recordWorkoutUseCase,
     required this.generateAccessCodeUseCase,
     required this.getCurrentUserUseCase,
-  }) : super(WorkoutState.initial());
+    required this.isUserInGymUseCase,
+  }) : super(WorkoutState.initial()) {
+    checkGymStatus();
+  }
+
+  Future<void> checkGymStatus() async {
+    try {
+      final user = await getCurrentUserUseCase();
+      if (user?.uid != null) {
+        final isInGym = await isUserInGymUseCase(userId: user!.uid);
+        emit(state.copyWith(isInGym: isInGym));
+      }
+    } catch (e) {
+      emit(state.copyWith(
+        errorMessage: 'Failed to check gym status: ${e.toString()}',
+      ));
+    }
+  }
 
   void toggleWorkout(String workout) {
     final updatedWorkouts = Map<String, bool>.from(state.selectedWorkouts);
@@ -82,11 +101,14 @@ class WorkoutCubit extends Cubit<WorkoutState> {
         emit(state.copyWith(
           isLoading: false,
           entryCode: code,
+          startTime: DateTime.now(),
+          isInGym: true,
         ));
       } else {
         emit(state.copyWith(
           isLoading: false,
           exitCode: code,
+          isInGym: false,
         ));
       }
     } catch (e) {
@@ -106,9 +128,18 @@ class WorkoutCubit extends Cubit<WorkoutState> {
 
       if (userId != null) {
         await saveWorkout(userId);
-        await generateExitCode(userId);
+        final exitCode = await generateAccessCodeUseCase(
+          userId: userId,
+          isEntry: false,
+        );
 
-        emit(state.copyWith(isLoading: false));
+        emit(state.copyWith(
+          isLoading: false,
+          isInGym: false,
+          exitCode: exitCode,
+          entryCode: null,
+          startTime: null,
+        ));
       } else {
         emit(state.copyWith(
           isLoading: false,

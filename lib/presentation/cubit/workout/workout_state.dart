@@ -37,6 +37,7 @@ class WorkoutState extends Equatable {
     String? errorMessage,
     DateTime? startTime,
     String? entryCode,
+    bool? isInGym,
   }) {
     return WorkoutState(
       selectedWorkouts: selectedWorkouts ?? this.selectedWorkouts,
@@ -57,4 +58,4 @@ class WorkoutState extends Equatable {
         startTime,
         entryCode,
       ];
-} 
+}
