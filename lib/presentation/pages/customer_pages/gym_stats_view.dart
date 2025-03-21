@@ -52,26 +52,11 @@ class GymStatsView extends StatelessWidget {
                           children: [
                             _buildDateDisplay(context, state),
                             const SizedBox(height: 16),
-                            _buildTimePeriodToggle(context, state),
-                            const SizedBox(height: 16),
                             _buildCurrentOccupancy(context, state),
                             const SizedBox(height: 16),
                           ],
                         ),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Average Occupancy',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.all(16.0),
-                      sliver: _buildOccupancyList(context, state),
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
@@ -85,6 +70,26 @@ class GymStatsView extends StatelessWidget {
                     SliverPadding(
                       padding: const EdgeInsets.all(16.0),
                       sliver: _buildPeakHoursList(context, state),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Average Occupancy',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildTimePeriodToggle(context, state),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16.0),
+                      sliver: _buildOccupancyList(context, state),
                     ),
                     const SliverPadding(
                       padding: EdgeInsets.only(bottom: 24.0),
@@ -128,117 +133,108 @@ class GymStatsView extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.people, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                Text(
-                  'Current Occupancy',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            hasData
-                ? Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '$currentCount',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: getBarColor(),
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'people',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: LinearProgressIndicator(
-                                value: percentage / 100,
-                                minHeight: 12,
-                                backgroundColor: Colors.grey[200],
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    getBarColor()),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '$percentage%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: getBarColor(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Center(child: Text('Empty gym!')),
+        padding: const EdgeInsets.all(12.0),
+        child: hasData
+            ? Row(
+                children: [
+                  Icon(Icons.people, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Current: ',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-          ],
-        ),
+                  Text(
+                    '$currentCount',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: getBarColor(),
+                        ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'people',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: percentage / 100,
+                        minHeight: 8,
+                        backgroundColor: Colors.grey[200],
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(getBarColor()),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$percentage%',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: getBarColor(),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Icon(Icons.people, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Current Occupancy: Empty gym!',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
       ),
     );
   }
 
   Widget _buildTimePeriodToggle(BuildContext context, OccupancyState state) {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: SegmentedButton<TimePeriod>(
-          style: ButtonStyle(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: SegmentedButton<TimePeriod>(
+            style: ButtonStyle(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+            segments: const [
+              ButtonSegment<TimePeriod>(
+                value: TimePeriod.daily,
+                label: Text('Daily'),
+                icon: Icon(Icons.today, size: 16),
+              ),
+              ButtonSegment<TimePeriod>(
+                value: TimePeriod.weekly,
+                label: Text('Weekly'),
+                icon: Icon(Icons.date_range, size: 16),
+              ),
+              ButtonSegment<TimePeriod>(
+                value: TimePeriod.monthly,
+                label: Text('Monthly'),
+                icon: Icon(Icons.calendar_month, size: 16),
+              ),
+            ],
+            selected: {state.timePeriod},
+            onSelectionChanged: (Set<TimePeriod> selection) {
+              if (selection.isNotEmpty) {
+                context
+                    .read<OccupancyCubit>()
+                    .changeTimePeriod(selection.first);
+              }
+            },
           ),
-          segments: const [
-            ButtonSegment<TimePeriod>(
-              value: TimePeriod.daily,
-              label: Text('Daily'),
-              icon: Icon(Icons.today),
-            ),
-            ButtonSegment<TimePeriod>(
-              value: TimePeriod.weekly,
-              label: Text('Weekly'),
-              icon: Icon(Icons.date_range),
-            ),
-            ButtonSegment<TimePeriod>(
-              value: TimePeriod.monthly,
-              label: Text('Monthly'),
-              icon: Icon(Icons.calendar_month),
-            ),
-          ],
-          selected: {state.timePeriod},
-          onSelectionChanged: (Set<TimePeriod> selection) {
-            if (selection.isNotEmpty) {
-              context.read<OccupancyCubit>().changeTimePeriod(selection.first);
-            }
-          },
         ),
       ),
     );
@@ -301,7 +297,7 @@ class GymStatsView extends StatelessWidget {
                         Container(
                           height: 24,
                           decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: const Color.fromARGB(255, 238, 238, 238),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -321,9 +317,9 @@ class GymStatsView extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 8),
                           child: Text(
                             '$occupancy',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                         ),
