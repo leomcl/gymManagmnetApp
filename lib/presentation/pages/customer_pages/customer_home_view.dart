@@ -9,6 +9,7 @@ import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'dart:developer';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -329,30 +330,48 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Use this code at the gate:'),
-              const SizedBox(height: 16),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: color),
-                ),
-                child: Text(
-                  code,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                    letterSpacing: 4,
+          content: SingleChildScrollView(
+            child: Container(
+              width: 280,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Use this code at the gate:'),
+                  const SizedBox(height: 16),
+                  // QR Code with fixed size container
+                  Container(
+                    width: 200,
+                    height: 200,
+                    child: QrImageView(
+                      data: code,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                      backgroundColor: Colors.white,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  // Manual text code (as backup)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: color),
+                    ),
+                    child: Text(
+                      code,
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                        letterSpacing: 4,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
