@@ -9,6 +9,11 @@ class GymStatsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Refresh occupancy data every time the view is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OccupancyCubit>().loadCurrentOccupancy();
+    });
+
     return BlocBuilder<OccupancyCubit, OccupancyState>(
       builder: (context, state) {
         return state.isLoading
@@ -17,15 +22,7 @@ class GymStatsView extends StatelessWidget {
                 child: CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      pinned: true,
-                      expandedHeight: 120.0,
-                      flexibleSpace: FlexibleSpaceBar(
-                        title: Text(
-                          'Gym Usage',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        centerTitle: false,
-                      ),
+                      title: const Text('Gym Stats'),
                       actions: [
                         IconButton(
                           icon: const Icon(Icons.calendar_today),
@@ -200,7 +197,7 @@ class GymStatsView extends StatelessWidget {
                   )
                 : const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Center(child: Text('No data available')),
+                    child: Center(child: Text('Empty gym!')),
                   ),
           ],
         ),

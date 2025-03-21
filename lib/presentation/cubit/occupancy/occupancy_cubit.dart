@@ -25,37 +25,16 @@ class OccupancyCubit extends Cubit<OccupancyState> {
   Future<void> loadCurrentOccupancy() async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      // If viewing historical data (not today), use the selected date
-      final selectedDate = state.selectedDate;
-      final now = DateTime.now();
-      final isToday = selectedDate.year == now.year &&
-          selectedDate.month == now.month &&
-          selectedDate.day == now.day;
-
-      // For current day, get real-time occupancy
+      // Always get real-time occupancy regardless of selected date
       final currentCount = await getCurrentOccupancy.execute();
+      final now = DateTime.now();
 
-      // If not today and count is 0, likely no data for this date
-      if (!isToday && currentCount == 0) {
-        emit(state.copyWith(
-          currentOccupancy: null,
-          isLoading: false,
-        ));
-        return;
-      }
-
-      // Get the date to use for display
-      final dateToUse = isToday ? now : selectedDate;
-      final currentHour =
-          isToday ? now.hour : 18; // Use 6PM as default for historical data
-
-      // Create an Occupancy object with the count
+      // Create an Occupancy object with the current count
       final occupancy = Occupancy(
         entries: currentCount,
         exits: 0,
-        lastUpdated: dateToUse,
-        hourId:
-            '${dateToUse.year}-${dateToUse.month}-${dateToUse.day}-$currentHour',
+        lastUpdated: now,
+        hourId: '${now.year}-${now.month}-${now.day}-${now.hour}',
       );
 
       emit(state.copyWith(
