@@ -6,9 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test/domain/repositories/auth_repository.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/domain/repositories/access_code_repository.dart';
+import 'package:test/domain/repositories/occupancy_repository.dart';
 import 'package:test/data/repositories/auth_repository_impl.dart';
 import 'package:test/data/repositories/workout_repository_impl.dart';
 import 'package:test/data/repositories/access_code_repository_impl.dart';
+import 'package:test/data/repositories/occupancy_repository_impl.dart';
 
 // Data sources
 import 'package:test/data/datasources/firebase_datasource.dart';
@@ -31,12 +33,20 @@ import 'package:test/domain/usecases/access_code/generate_access_code.dart';
 import 'package:test/domain/usecases/access_code/validate_access_code.dart';
 import 'package:test/domain/usecases/access_code/is_user_in_gym.dart';
 
+// Use cases - Gym Stats
+import 'package:test/domain/usecases/occupancy/compare_time_periods_occupancy.dart';
+import 'package:test/domain/usecases/occupancy/get_peak_occupancy_hours.dart';
+import 'package:test/domain/usecases/occupancy/get_current_occupancy.dart';
+import 'package:test/domain/usecases/occupancy/get_average_occupancy_by_hour.dart';
+import 'package:test/domain/usecases/occupancy/get_occupancy_trend_by_day.dart';
+
+
 // BLoCs
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
-
+import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 // Use cases - Gym Stats
 import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
 import 'package:test/domain/repositories/gym_stats_repository.dart';
@@ -75,6 +85,9 @@ Future<void> init() async {
       getCurrentUser: sl<GetCurrentUser>(),
     ),
   );
+  sl.registerLazySingleton<OccupancyRepository>(() => OccupancyRepositoryImpl(
+      firestore: sl<FirebaseFirestore>(),
+  ));
 
   // Use cases - Auth
   sl.registerLazySingleton(() => SignIn(sl()));
@@ -83,6 +96,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetUserRole(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
   sl.registerLazySingleton(() => GetAuthStateChanges(sl()));
+
+  // Use cases - Occupancy
+  sl.registerLazySingleton(() => GetCurrentOccupancy(sl()));
+  sl.registerLazySingleton(() => GetPeakOccupancyHours(sl()));
+  sl.registerLazySingleton(() => GetAverageOccupancyByHour(sl()));
+  sl.registerLazySingleton(() => GetOccupancyTrendByDay(sl()));
+  sl.registerLazySingleton(() => CompareTimePeriodsOccupancy(sl()));
+
 
   // Use cases - Workout
   sl.registerLazySingleton(
@@ -111,6 +132,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FirebaseDataSource(
         auth: sl(),
         firestore: sl(),
+      ));
+  
+    sl.registerFactory(() => OccupancyCubit(
+        getCurrentOccupancy: sl(),
+        getPeakOccupancyHours: sl(),
+        getAverageOccupancyByHour: sl(),
+        getOccupancyTrendByDay: sl(),
+        compareTimePeriodsOccupancy: sl(),
       ));
 
   //! External

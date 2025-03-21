@@ -6,7 +6,7 @@ import 'package:test/di/injection_container.dart' as di;
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
-
+import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -29,6 +29,14 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<GymStatsCubit>(
           create: (context) => di.sl<GymStatsCubit>(),
+        ),
+        BlocProvider<OccupancyCubit>(
+          create: (context) {
+            final cubit = di.sl<OccupancyCubit>();
+            // Load occupancy data when app starts
+            cubit.loadAllData();
+            return cubit;
+          },
         ),
       ],
       child: MaterialApp(
