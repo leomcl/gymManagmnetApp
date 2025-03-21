@@ -22,6 +22,8 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   String? generatedExitCode;
   bool isLoading = false;
   int _selectedIndex = 0;
+  String? _lastShownExitCode;
+  String? _lastShownEntryCode;
 
   // Define your pages
   late final List<Widget> _pages;
@@ -202,9 +204,15 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           isLoading = false;
         });
 
-        if (state.exitCode != null) {
+        // Only show exit code dialog if the exit code is new or changed
+        if (state.exitCode != null && state.exitCode != _lastShownExitCode) {
+          _lastShownExitCode = state.exitCode;
           _showCodeDialog('Exit Code', state.exitCode!, Colors.red);
-        } else if (state.entryCode != null) {
+        }
+        // Only show entry code dialog if the entry code is new or changed
+        else if (state.entryCode != null &&
+            state.entryCode != _lastShownEntryCode) {
+          _lastShownEntryCode = state.entryCode;
           _showCodeDialog('Entry Code', state.entryCode!, Colors.green);
         }
       },

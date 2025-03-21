@@ -7,6 +7,7 @@ class WorkoutState extends Equatable {
   final String? errorMessage;
   final DateTime? startTime;
   final String? entryCode;
+  final bool isInGym;
 
   const WorkoutState({
     required this.selectedWorkouts,
@@ -15,6 +16,7 @@ class WorkoutState extends Equatable {
     this.errorMessage,
     this.startTime,
     this.entryCode,
+    this.isInGym = false,
   });
 
   factory WorkoutState.initial() {
@@ -27,6 +29,7 @@ class WorkoutState extends Equatable {
         'Full Body': false,
       },
       startTime: null,
+      isInGym: false,
     );
   }
 
@@ -46,6 +49,7 @@ class WorkoutState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       startTime: startTime ?? this.startTime,
       entryCode: entryCode ?? this.entryCode,
+      isInGym: isInGym ?? this.isInGym,
     );
   }
 
@@ -57,5 +61,6 @@ class WorkoutState extends Equatable {
         errorMessage,
         startTime,
         entryCode,
+        isInGym,
       ];
 }
