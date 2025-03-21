@@ -31,14 +31,17 @@ class RecordWorkout {
   }
 
   String _determineWorkoutType(Map<String, bool> tags, Duration duration) {
-    if (duration.inMinutes < 30) return 'quick';
-    if (duration.inHours >= 2) return 'intense';
 
     // Check specific workout combinations
-    final bool isFullBody = tags['Full Body'] ?? false;
+    final bool isChest = tags['Chest'] ?? false;
+    final bool isArms = tags['Arms'] ?? false;
+    final bool isBack = tags['Back'] ?? false;
+
+    if (isChest || isArms || isBack) return 'weights';
+
+
     final bool isCardio = tags['Cardio'] ?? false;
 
-    if (isFullBody && isCardio) return 'comprehensive';
     if (isCardio) return 'cardio';
     return 'regular';
   }
