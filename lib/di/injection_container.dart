@@ -88,7 +88,9 @@ Future<void> init() async {
       isUserInGymUseCase: sl(),
     ),
   );
-  sl.registerFactory(() => WorkoutSelectionCubit());
+  sl.registerFactory(() => WorkoutSelectionCubit(
+        getClassesByDate: sl(),
+      ));
   sl.registerFactory(() => GymStatsCubit(
         sl<GetCurrentGymOccupancy>(),
         sl<GetHourlyEntries>(),

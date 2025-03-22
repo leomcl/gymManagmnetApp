@@ -13,7 +13,6 @@ class RecordWorkout {
     required DateTime entryTime,
     required DateTime exitTime,
   }) async {
-
     // Ensure the workout duration is reasonable
     final duration = exitTime.difference(entryTime);
 
@@ -31,14 +30,25 @@ class RecordWorkout {
   }
 
   String _determineWorkoutType(Map<String, bool> tags, Duration duration) {
+    // Check if this was a class workout
+    final bool isClass = tags['Class'] ?? false;
+    if (isClass) {
+      // Look for a specific class tag
+      for (final entry in tags.entries) {
+        if (entry.key.startsWith('Class_') && entry.value) {
+          // Return the class name by removing the Class_ prefix
+          return 'class:${entry.key.substring(6)}';
+        }
+      }
+      return 'class';
+    }
 
-    // Check specific workout combinations
+    // Check specific workout combinations for solo workouts
     final bool isChest = tags['Chest'] ?? false;
     final bool isArms = tags['Arms'] ?? false;
     final bool isBack = tags['Back'] ?? false;
 
     if (isChest || isArms || isBack) return 'weights';
-
 
     final bool isCardio = tags['Cardio'] ?? false;
 

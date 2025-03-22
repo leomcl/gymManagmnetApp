@@ -14,6 +14,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/widgets/workout_selection_widget.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
+import 'package:test/presentation/cubit/workout_selection/workout_selection_state.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -307,13 +308,31 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   Future<void> _handleGymExit(BuildContext context) async {
     final workoutCubit = context.read<WorkoutCubit>();
     final workoutSelectionCubit = context.read<WorkoutSelectionCubit>();
+    final workoutSelectionState = workoutSelectionCubit.state;
 
     // Get selected workouts from the WorkoutSelectionCubit
-    final selectedWorkouts = workoutSelectionCubit.getSelectedWorkouts();
+    final selectedWorkouts =
+        Map<String, bool>.from(workoutSelectionCubit.getSelectedWorkouts());
 
-    // Update WorkoutCubit with the selected workouts from WorkoutSelectionCubit
-    workoutCubit
-        .emit(workoutCubit.state.copyWith(selectedWorkouts: selectedWorkouts));
+    // Add a tag to indicate if this was a solo workout or class
+    if (workoutSelectionState.workoutMode == WorkoutMode.solo) {
+      selectedWorkouts['Solo'] = true;
+      selectedWorkouts['Class'] = false;
+    } else {
+      selectedWorkouts['Solo'] = false;
+      selectedWorkouts['Class'] = true;
+
+      // If a class was selected, add its name as a tag
+      if (workoutSelectionState.selectedClass != null) {
+        selectedWorkouts[
+            'Class_${workoutSelectionState.selectedClass!.className}'] = true;
+      }
+    }
+
+    // Update WorkoutCubit with the modified selected workouts
+    workoutCubit.emit(workoutCubit.state.copyWith(
+      selectedWorkouts: selectedWorkouts,
+    ));
 
     // Continue with handling gym exit
     await workoutCubit.handleGymExit();
