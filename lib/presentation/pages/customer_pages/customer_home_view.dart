@@ -5,7 +5,6 @@ import 'package:test/presentation/cubit/auth/auth_state.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
 import 'package:test/presentation/pages/customer_pages/workout_stats_view.dart';
-import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/pages/customer_pages/class_view.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:developer';

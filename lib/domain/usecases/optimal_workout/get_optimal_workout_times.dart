@@ -1,4 +1,3 @@
-import '../../entities/user_preferences.dart';
 import '../../repositories/occupancy_repository.dart';
 import '../../repositories/user_preferences_repository.dart';
 
