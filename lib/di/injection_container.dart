@@ -58,6 +58,7 @@ import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 
 // Use cases - Gym Stats
 import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
@@ -87,6 +88,7 @@ Future<void> init() async {
       isUserInGymUseCase: sl(),
     ),
   );
+  sl.registerFactory(() => WorkoutSelectionCubit());
   sl.registerFactory(() => GymStatsCubit(
         sl<GetCurrentGymOccupancy>(),
         sl<GetHourlyEntries>(),

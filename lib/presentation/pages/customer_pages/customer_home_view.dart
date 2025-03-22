@@ -12,6 +12,8 @@ import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'dart:developer';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+import 'package:test/presentation/widgets/workout_selection_widget.dart';
+import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -267,35 +269,11 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                         ),
                       ),
                     ] else ...[
-                      // Workout Selection Section
-                      const Text(
-                        'Select Your Workouts',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 220,
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 3,
-                          children: state.selectedWorkouts.entries.map((entry) {
-                            return WorkoutButton(
-                              label: entry.key,
-                              isSelected: entry.value,
-                              onSelected: () {
-                                context
-                                    .read<WorkoutCubit>()
-                                    .toggleWorkout(entry.key);
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      // Sync workout selection cubit with main workout cubit
+                      Builder(builder: (context) {
+                        _syncWorkoutSelectionCubit(context, isInGym);
+                        return const WorkoutSelectionWidget();
+                      }),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
@@ -328,6 +306,16 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
 
   Future<void> _handleGymExit(BuildContext context) async {
     final workoutCubit = context.read<WorkoutCubit>();
+    final workoutSelectionCubit = context.read<WorkoutSelectionCubit>();
+
+    // Get selected workouts from the WorkoutSelectionCubit
+    final selectedWorkouts = workoutSelectionCubit.getSelectedWorkouts();
+
+    // Update WorkoutCubit with the selected workouts from WorkoutSelectionCubit
+    workoutCubit
+        .emit(workoutCubit.state.copyWith(selectedWorkouts: selectedWorkouts));
+
+    // Continue with handling gym exit
     await workoutCubit.handleGymExit();
   }
 
@@ -465,6 +453,13 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     );
   }
 
+  void _syncWorkoutSelectionCubit(BuildContext context, bool isInGym) {
+    if (isInGym) {
+      final workoutState = context.read<WorkoutCubit>().state;
+      context.read<WorkoutSelectionCubit>().syncWithWorkoutState(workoutState);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -502,48 +497,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
             label: 'Profile',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class WorkoutButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onSelected;
-
-  const WorkoutButton({
-    super.key,
-    required this.label,
-    required this.isSelected,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor:
-            isSelected ? Theme.of(context).primaryColor : Colors.white,
-        foregroundColor:
-            isSelected ? Colors.white : Theme.of(context).primaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        side: BorderSide(
-          color: Theme.of(context).primaryColor,
-          width: 1.5,
-        ),
-        elevation: isSelected ? 2 : 0,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      onPressed: onSelected,
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

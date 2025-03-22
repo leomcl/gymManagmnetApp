@@ -13,13 +13,11 @@ class GymClassesCubit extends Cubit<GymClassesState> {
   final GetClassesByDate getClassesByDate;
   final GetClassesByTag getClassesByTag;
 
-
   GymClassesCubit({
     required this.getAllClasses,
     required this.getClassById,
     required this.getClassesByDate,
     required this.getClassesByTag,
-
   }) : super(const GymClassesState());
 
   Future<void> loadClasses() async {
@@ -129,5 +127,4 @@ class GymClassesCubit extends Cubit<GymClassesState> {
     emit(state.copyWith(selectedDate: null));
     loadClasses();
   }
-
 }
