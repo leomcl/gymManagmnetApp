@@ -6,6 +6,7 @@ import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_state.dart';
 import 'package:test/presentation/pages/customer_pages/workout_stats_view.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
+import 'package:test/presentation/pages/customer_pages/class_view.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'dart:developer';
@@ -36,6 +37,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     _pages = [
       _buildHomePage(),
       const WorkoutSelectionPage(),
+      const ClassView(),
       BlocProvider(
         create: (context) => GetIt.I<GymStatsCubit>(),
         child: const GymStatsView(),
@@ -482,6 +484,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
             label: 'Workout',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Classes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
