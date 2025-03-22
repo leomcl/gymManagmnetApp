@@ -17,6 +17,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+        debugShowCheckedModeBanner: false,
         home: const WidgetTree(),
       ),
     );

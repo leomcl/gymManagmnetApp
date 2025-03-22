@@ -25,6 +25,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
   int _selectedIndex = 0;
   String? _lastShownExitCode;
   String? _lastShownEntryCode;
+  int _futureBuilderKey = 0;
 
   // Define your pages
   late final List<Widget> _pages;
@@ -228,6 +229,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         }
 
         return FutureBuilder<bool>(
+          key: ValueKey(_futureBuilderKey),
           future: userId != null
               ? context.read<WorkoutCubit>().isUserInGymUseCase(userId: userId)
               : Future.value(false),
@@ -378,7 +380,20 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Force a refresh of the FutureBuilder
+                setState(() {
+                  _futureBuilderKey++; // Increment the key to force rebuild
+                  _pages[0] = _buildHomePage(); // Rebuild the home page
+                });
+
+                // Also refresh gym status in the cubit
+                final authState = this.context.read<AuthCubit>().state;
+                if (authState is Authenticated) {
+                  this.context.read<WorkoutCubit>().checkGymStatus();
+                }
+              },
               child: const Text('OK'),
             ),
           ],
