@@ -7,10 +7,12 @@ import 'package:test/domain/repositories/auth_repository.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/domain/repositories/access_code_repository.dart';
 import 'package:test/domain/repositories/occupancy_repository.dart';
+import 'package:test/domain/repositories/user_preferences_repository.dart';
 import 'package:test/data/repositories/auth_repository_impl.dart';
 import 'package:test/data/repositories/workout_repository_impl.dart';
 import 'package:test/data/repositories/access_code_repository_impl.dart';
 import 'package:test/data/repositories/occupancy_repository_impl.dart';
+import 'package:test/data/repositories/user_preferences_repository_impl.dart';
 
 // repositories - Gym Classes
 import 'package:test/domain/repositories/gym_class_repository.dart';
@@ -51,20 +53,22 @@ import 'package:test/domain/usecases/gym_classes/get_classes_by_date.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_tag.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart';
 
+// Use cases - Optimal Workout
+import 'package:test/domain/usecases/optimal_workout/get_optimal_workout_times.dart';
+import 'package:test/domain/usecases/optimal_workout/format_optimal_workout_times.dart';
+
 // BLoCs
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
-import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
+import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 
 // Use cases - Gym Stats
-import 'package:test/domain/usecases/gym_stats/get_current_gym_occupancy.dart';
 import 'package:test/domain/repositories/gym_stats_repository.dart';
 import 'package:test/data/repositories/gym_stats_repository_impl.dart';
-import 'package:test/domain/usecases/gym_stats/get_hourly_attendance.dart';
 
 final sl = GetIt.instance;
 
@@ -91,16 +95,18 @@ Future<void> init() async {
   sl.registerFactory(() => WorkoutSelectionCubit(
         getClassesByDate: sl(),
       ));
-  sl.registerFactory(() => GymStatsCubit(
-        sl<GetCurrentGymOccupancy>(),
-        sl<GetHourlyEntries>(),
-      ));
+
   sl.registerFactory(
     () => WorkoutStatsCubit(
       workoutRepository: sl<WorkoutRepository>(),
       getCurrentUser: sl<GetCurrentUser>(),
     ),
   );
+  sl.registerFactory(() => OptimalWorkoutCubit(
+        getOptimalWorkoutTimes: sl<GetOptimalWorkoutTimes>(),
+        formatOptimalWorkoutTimes: sl<FormatOptimalWorkoutTimes>(),
+        getCurrentUser: sl<GetCurrentUser>(),
+      ));
   sl.registerLazySingleton<OccupancyRepository>(() => OccupancyRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
@@ -120,6 +126,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOccupancyTrendByDay(sl()));
   sl.registerLazySingleton(() => CompareTimePeriodsOccupancy(sl()));
 
+  // Use cases - Optimal Workout
+  sl.registerLazySingleton(() => GetOptimalWorkoutTimes(
+        occupancyRepository: sl<OccupancyRepository>(),
+        preferencesRepository: sl<UserPreferencesRepository>(),
+      ));
+  sl.registerLazySingleton(() => FormatOptimalWorkoutTimes());
+
   // Use cases - Workout
   sl.registerLazySingleton(
       () => RecordWorkout(sl<WorkoutRepository>(), sl<AccessCodeRepository>()));
@@ -132,10 +145,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ValidateAccessCode(sl()));
   sl.registerLazySingleton(() => IsUserInGym(sl()));
 
-  // Use cases - Gym Stats
-  sl.registerLazySingleton(() => GetCurrentGymOccupancy(sl()));
-  sl.registerLazySingleton(() => GetHourlyEntries(sl()));
-
   // Repositories
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<WorkoutRepository>(() => WorkoutRepositoryImpl());
@@ -145,6 +154,8 @@ Future<void> init() async {
   sl.registerLazySingleton<GymClassRepository>(() => GymClassRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
+  sl.registerLazySingleton<UserPreferencesRepository>(
+      () => UserPreferencesRepositoryImpl(sl()));
 
   // Use cases - Gym Classes
   sl.registerLazySingleton(() => GetAllClasses(sl()));

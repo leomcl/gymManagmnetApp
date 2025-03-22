@@ -8,13 +8,14 @@ import 'package:test/presentation/pages/customer_pages/workout_stats_view.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/pages/customer_pages/class_view.dart';
 import 'package:get_it/get_it.dart';
-import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'dart:developer';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/widgets/workout_selection_widget.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_state.dart';
+import 'package:test/presentation/screens/optimal_workout_screen.dart';
+import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -46,8 +47,8 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         child: const ClassView(),
       ),
       BlocProvider(
-        create: (context) => GetIt.I<GymStatsCubit>(),
-        child: const GymStatsView(),
+        create: (context) => GetIt.I<OptimalWorkoutCubit>(),
+        child: const OptimalWorkoutScreen(),
       ),
       _buildProfilePage(),
     ];
@@ -510,6 +511,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.access_time),
+            label: 'Best Times',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

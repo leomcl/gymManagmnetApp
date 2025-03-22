@@ -9,6 +9,7 @@ import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
+import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<GymClassesCubit>(
           create: (context) => di.sl<GymClassesCubit>(),
+        ),
+        BlocProvider<OptimalWorkoutCubit>(
+          create: (context) => di.sl<OptimalWorkoutCubit>(),
         ),
       ],
       child: MaterialApp(
