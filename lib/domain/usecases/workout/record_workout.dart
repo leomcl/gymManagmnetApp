@@ -33,13 +33,6 @@ class RecordWorkout {
     // Check if this was a class workout
     final bool isClass = tags['Class'] ?? false;
     if (isClass) {
-      // Look for a specific class tag
-      for (final entry in tags.entries) {
-        if (entry.key.startsWith('Class_') && entry.value) {
-          // Return the class name by removing the Class_ prefix
-          return 'class:${entry.key.substring(6)}';
-        }
-      }
       return 'class';
     }
 
