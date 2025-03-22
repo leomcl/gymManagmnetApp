@@ -7,6 +7,8 @@ import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
+import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -16,7 +18,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,9 @@ class MyApp extends StatelessWidget {
             return cubit;
           },
         ),
+        BlocProvider<GymClassesCubit>(
+          create: (context) => di.sl<GymClassesCubit>(),
+        ),
       ],
       child: MaterialApp(
         title: 'Gym App',
@@ -52,4 +56,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

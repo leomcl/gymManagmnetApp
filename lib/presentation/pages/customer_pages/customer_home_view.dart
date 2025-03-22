@@ -11,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'dart:developer';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -37,7 +38,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     _pages = [
       _buildHomePage(),
       const WorkoutSelectionPage(),
-      const ClassView(),
+      BlocProvider(
+        create: (context) => GetIt.I<GymClassesCubit>(),
+        child: const ClassView(),
+      ),
       BlocProvider(
         create: (context) => GetIt.I<GymStatsCubit>(),
         child: const GymStatsView(),
