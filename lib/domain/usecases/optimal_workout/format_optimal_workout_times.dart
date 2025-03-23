@@ -7,8 +7,6 @@ class FormatOptimalWorkoutTimes {
     }
 
     final StringBuffer buffer = StringBuffer();
-    buffer.writeln(
-        'Based on gym occupancy data, here are your optimal workout times:');
     buffer.writeln();
 
     final daysOfWeek = {
@@ -38,8 +36,6 @@ class FormatOptimalWorkoutTimes {
       buffer.writeln();
     }
 
-    buffer.writeln(
-        'These recommendations are based on historical gym occupancy data.');
     return buffer.toString();
   }
 

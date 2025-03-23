@@ -56,6 +56,8 @@ import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart'
 // Use cases - Optimal Workout
 import 'package:test/domain/usecases/optimal_workout/get_optimal_workout_times.dart';
 import 'package:test/domain/usecases/optimal_workout/format_optimal_workout_times.dart';
+import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
+import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
 
 // BLoCs
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
@@ -103,9 +105,11 @@ Future<void> init() async {
     ),
   );
   sl.registerFactory(() => OptimalWorkoutCubit(
-        getOptimalWorkoutTimes: sl<GetOptimalWorkoutTimes>(),
-        formatOptimalWorkoutTimes: sl<FormatOptimalWorkoutTimes>(),
-        getCurrentUser: sl<GetCurrentUser>(),
+        getOptimalWorkoutTimes: sl(),
+        formatOptimalWorkoutTimes: sl(),
+        getCurrentUser: sl(),
+        getUserPreferedWorkout: sl(),
+        getUserPreferedDays: sl(),
       ));
   sl.registerLazySingleton<OccupancyRepository>(() => OccupancyRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
@@ -132,6 +136,9 @@ Future<void> init() async {
         preferencesRepository: sl<UserPreferencesRepository>(),
       ));
   sl.registerLazySingleton(() => FormatOptimalWorkoutTimes());
+  sl.registerLazySingleton(
+      () => GetUserPreferedWorkout(sl<GetWorkoutHistory>()));
+  sl.registerLazySingleton(() => GetUserPreferedDays(sl<GetWorkoutHistory>()));
 
   // Use cases - Workout
   sl.registerLazySingleton(

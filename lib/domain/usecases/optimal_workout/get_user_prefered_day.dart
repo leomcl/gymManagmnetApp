@@ -3,7 +3,6 @@
 // return the prefered workout day
 
 import 'package:test/domain/usecases/workout/get_workout_history.dart';
-import 'package:test/domain/entities/workout.dart';
 
 class GetUserPreferedDays {
   final GetWorkoutHistory getWorkoutHistory;
@@ -31,6 +30,6 @@ class GetUserPreferedDays {
     final sortedDays = dayCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return sortedDays.map((e) => e.key).toList();
+    return sortedDays.map((e) => e.key).take(3).toList();
   }
 }

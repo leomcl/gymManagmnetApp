@@ -14,14 +14,23 @@ class OptimalWorkoutLoading extends OptimalWorkoutState {}
 class OptimalWorkoutLoaded extends OptimalWorkoutState {
   final Map<int, List<int>> optimalTimes;
   final String formattedResult;
+  final List<String> preferredWorkoutTypes;
+  final List<int> preferredWorkoutDays;
 
   const OptimalWorkoutLoaded({
     required this.optimalTimes,
     required this.formattedResult,
+    required this.preferredWorkoutTypes,
+    required this.preferredWorkoutDays,
   });
 
   @override
-  List<Object?> get props => [optimalTimes, formattedResult];
+  List<Object?> get props => [
+        optimalTimes,
+        formattedResult,
+        preferredWorkoutTypes,
+        preferredWorkoutDays
+      ];
 }
 
 class OptimalWorkoutError extends OptimalWorkoutState {
