@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/domain/entities/user_preferences.dart';
 import 'package:test/domain/repositories/user_preferences_repository.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
