@@ -1,3 +1,5 @@
+import 'package:test/domain/entities/workout.dart';
+
 abstract class WorkoutRepository {
   /// Records a workout session for a user
   ///
@@ -22,7 +24,7 @@ abstract class WorkoutRepository {
   /// [endDate] optional end date to filter workouts
   ///
   /// Returns a list of workout sessions
-  Future<List<Map<String, dynamic>>> getWorkoutHistory({
+  Future<List<Workout>> getWorkoutHistory({
     required String userId,
     int? limit,
     DateTime? startDate,
@@ -43,7 +45,7 @@ abstract class WorkoutRepository {
   /// [limit] optional maximum number of records to retrieve
   ///
   /// Returns a list of workout sessions
-  Future<List<Map<String, dynamic>>> getWorkoutsByDateRange({
+  Future<List<Workout>> getWorkoutsByDateRange({
     required DateTime startDate,
     required DateTime endDate,
     int? limit,

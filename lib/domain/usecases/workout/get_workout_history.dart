@@ -1,11 +1,12 @@
 import 'package:test/domain/repositories/workout_repository.dart';
+import 'package:test/domain/entities/workout.dart';
 
 class GetWorkoutHistory {
   final WorkoutRepository repository;
 
   GetWorkoutHistory(this.repository);
 
-  Future<List<Map<String, dynamic>>> call({
+  Future<List<Workout>> call({
     required String userId,
     int? limit,
   }) async {
@@ -14,4 +15,4 @@ class GetWorkoutHistory {
       limit: limit,
     );
   }
-} 
+}

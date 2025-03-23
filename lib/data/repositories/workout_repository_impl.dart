@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
+import 'package:test/domain/entities/workout.dart';
+import 'package:test/data/models/workout_model.dart';
 
 class WorkoutRepositoryImpl implements WorkoutRepository {
   final FirebaseFirestore _firestore;
@@ -33,7 +35,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getWorkoutHistory({
+  Future<List<Workout>> getWorkoutHistory({
     required String userId,
     int? limit,
     DateTime? startDate,
@@ -65,21 +67,30 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
     final QuerySnapshot snapshot = await query.get();
 
+    // Convert to WorkoutModel and then to Workout entities
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      return {
-        'id': doc.id,
-        'userId': data['userId'],
-        'entryTime': (data['entryTime'] as Timestamp).toDate(),
-        'exitTime': (data['exitTime'] as Timestamp).toDate(),
-        'duration': data['duration'],
-        'workoutTags': data['workoutTags'],
-        'workoutType': data['workoutType'],
-        'year': data['year'],
-        'month': data['month'],
-        'day': data['day'],
-        'dayOfWeek': data['dayOfWeek'],
-      };
+      // Get workoutTags as List<String>
+      Map<String, bool> tagsMap =
+          Map<String, bool>.from(data['workoutTags'] ?? {});
+      List<String> tagsList = tagsMap.entries
+          .where((entry) => entry.value == true)
+          .map((entry) => entry.key)
+          .toList();
+
+      // Create and return the entity
+      return Workout(
+        day: data['day'] ?? 0,
+        dayOfWeek: data['dayOfWeek'] ?? 0,
+        duration: data['duration'] ?? 0,
+        entryTime: (data['entryTime'] as Timestamp).toDate(),
+        exitTime: (data['exitTime'] as Timestamp).toDate(),
+        month: data['month'] ?? 0,
+        userId: data['userId'] ?? '',
+        workoutTags: tagsList,
+        workoutType: data['workoutType'] ?? '',
+        year: data['year'] ?? 0,
+      );
     }).toList();
   }
 
@@ -102,7 +113,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   // New method for querying workouts by date range (all users)
-  Future<List<Map<String, dynamic>>> getWorkoutsByDateRange({
+  Future<List<Workout>> getWorkoutsByDateRange({
     required DateTime startDate,
     required DateTime endDate,
     int? limit,
@@ -120,21 +131,30 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
     final QuerySnapshot snapshot = await query.get();
 
+    // Convert to WorkoutModel and then to Workout entities
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      return {
-        'id': doc.id,
-        'userId': data['userId'],
-        'entryTime': (data['entryTime'] as Timestamp).toDate(),
-        'exitTime': (data['exitTime'] as Timestamp).toDate(),
-        'duration': data['duration'],
-        'workoutTags': data['workoutTags'],
-        'workoutType': data['workoutType'],
-        'year': data['year'],
-        'month': data['month'],
-        'day': data['day'],
-        'dayOfWeek': data['dayOfWeek'],
-      };
+      // Get workoutTags as List<String>
+      Map<String, bool> tagsMap =
+          Map<String, bool>.from(data['workoutTags'] ?? {});
+      List<String> tagsList = tagsMap.entries
+          .where((entry) => entry.value == true)
+          .map((entry) => entry.key)
+          .toList();
+
+      // Create and return the entity
+      return Workout(
+        day: data['day'] ?? 0,
+        dayOfWeek: data['dayOfWeek'] ?? 0,
+        duration: data['duration'] ?? 0,
+        entryTime: (data['entryTime'] as Timestamp).toDate(),
+        exitTime: (data['exitTime'] as Timestamp).toDate(),
+        month: data['month'] ?? 0,
+        userId: data['userId'] ?? '',
+        workoutTags: tagsList,
+        workoutType: data['workoutType'] ?? '',
+        year: data['year'] ?? 0,
+      );
     }).toList();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
 import 'package:intl/intl.dart';
 import 'package:test/di/injection_container.dart' as di;
+import 'package:test/domain/entities/workout.dart';
 
 class WorkoutSelectionPage extends StatefulWidget {
   const WorkoutSelectionPage({super.key});
@@ -67,11 +68,11 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     );
   }
 
-  Widget _buildWorkoutStats(List<Map<String, dynamic>> workouts) {
+  Widget _buildWorkoutStats(List<Workout> workouts) {
     final totalWorkouts = workouts.length;
     final totalMinutes = workouts.fold<int>(
       0,
-      (sum, workout) => sum + (workout['duration'] as int),
+      (sum, workout) => sum + workout.duration,
     );
 
     return Card(
@@ -129,7 +130,7 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     );
   }
 
-  Widget _buildWorkoutList(List<Map<String, dynamic>> workouts) {
+  Widget _buildWorkoutList(List<Workout> workouts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -150,10 +151,10 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     );
   }
 
-  Widget _buildWorkoutItem(Map<String, dynamic> workout) {
-    final entryTime = workout['entryTime'] as DateTime;
-    final duration = workout['duration'] as int;
-    final workoutType = workout['workoutType'] as String;
+  Widget _buildWorkoutItem(Workout workout) {
+    final entryTime = workout.entryTime;
+    final duration = workout.duration;
+    final workoutType = workout.workoutType;
     final now = DateTime.now();
     final difference = now.difference(entryTime);
 
@@ -177,9 +178,9 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     switch (workoutType.toLowerCase()) {
       case 'cardio':
         workoutIcon = Icons.directions_run;
-          iconColor = Colors.green;
-          bgColor = Colors.green[100]!;
-          break;
+        iconColor = Colors.green;
+        bgColor = Colors.green[100]!;
+        break;
       case 'running':
       case 'jogging':
         workoutIcon = Icons.directions_run;
@@ -188,14 +189,14 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
         break;
       case 'strength':
         workoutIcon = Icons.fitness_center;
-          iconColor = Colors.blue;
-          bgColor = Colors.blue[100]!;
-          break;
+        iconColor = Colors.blue;
+        bgColor = Colors.blue[100]!;
+        break;
       case 'weight training':
         workoutIcon = Icons.fitness_center;
-          iconColor = Colors.blue;
-          bgColor = Colors.blue[100]!;
-          break;
+        iconColor = Colors.blue;
+        bgColor = Colors.blue[100]!;
+        break;
       case 'bodybuilding':
         workoutIcon = Icons.fitness_center;
         iconColor = Colors.blue;
@@ -226,13 +227,7 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     }
 
     // Get workout tags
-    final workoutTags = workout['workoutTags'] is Map
-        ? (workout['workoutTags'] as Map)
-            .entries
-            .where((e) => e.value == true)
-            .map((e) => e.key.toString())
-            .toList()
-        : <String>[];
+    final workoutTags = workout.workoutTags;
 
     return ListTile(
       leading: CircleAvatar(

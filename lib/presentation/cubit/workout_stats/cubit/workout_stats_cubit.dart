@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
+import 'package:test/domain/entities/workout.dart';
 
 part 'workout_stats_state.dart';
 
