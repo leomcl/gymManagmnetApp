@@ -15,7 +15,6 @@ import 'package:test/presentation/cubit/workout_selection/workout_selection_cubi
 import 'package:test/presentation/cubit/workout_selection/workout_selection_state.dart';
 import 'package:test/presentation/screens/optimal_workout_screen.dart';
 import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
-import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 
