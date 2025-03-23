@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/di/injection_container.dart' as di;
 import 'package:test/presentation/cubit/auth/auth_cubit.dart';
 import 'package:test/presentation/cubit/workout/workout_cubit.dart';
-import 'package:test/presentation/cubit/gym_stats/gym_stats_cubit.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
@@ -34,9 +33,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<WorkoutSelectionCubit>(
           create: (context) => di.sl<WorkoutSelectionCubit>(),
         ),
-        BlocProvider<GymStatsCubit>(
-          create: (context) => di.sl<GymStatsCubit>(),
-        ),
+        
         BlocProvider<OccupancyCubit>(
           create: (context) {
             final cubit = di.sl<OccupancyCubit>();
