@@ -13,8 +13,6 @@ import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/widgets/workout_selection_widget.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_state.dart';
-import 'package:test/presentation/screens/optimal_workout_screen.dart';
-import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/widgets/suggestions_widget.dart';
@@ -52,10 +50,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
       BlocProvider(
         create: (context) => GetIt.I<OccupancyCubit>(),
         child: const GymStatsView(),
-      ),
-      BlocProvider(
-        create: (context) => GetIt.I<OptimalWorkoutCubit>(),
-        child: const OptimalWorkoutScreen(),
       ),
       _buildProfilePage(),
     ];
@@ -640,10 +634,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'Best Times',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

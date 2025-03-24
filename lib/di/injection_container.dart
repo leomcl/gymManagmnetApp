@@ -65,7 +65,6 @@ import 'package:test/presentation/cubit/workout_stats/cubit/workout_stats_cubit.
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
-import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
 
 // Use cases - Gym Stats
@@ -106,14 +105,6 @@ Future<void> init() async {
   );
   sl.registerFactory(() => SuggestionsCubit(
         getOptimalWorkoutTimes: sl(),
-        getCurrentUser: sl(),
-        getUserPreferedWorkout: sl(),
-        getUserPreferedDays: sl(),
-        getClassSuggestion: sl(),
-      ));
-  sl.registerFactory(() => OptimalWorkoutCubit(
-        getOptimalWorkoutTimes: sl(),
-        formatOptimalWorkoutTimes: sl(),
         getCurrentUser: sl(),
         getUserPreferedWorkout: sl(),
         getUserPreferedDays: sl(),
