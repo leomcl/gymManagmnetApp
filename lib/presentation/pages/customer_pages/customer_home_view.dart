@@ -19,8 +19,6 @@ import 'package:test/presentation/widgets/suggestions_widget.dart';
 import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
 import 'package:test/presentation/pages/customer_pages/profile_view.dart';
 import 'package:test/presentation/cubit/profile/profile_cubit.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
