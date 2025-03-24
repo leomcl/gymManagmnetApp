@@ -122,7 +122,7 @@ class ClassSuggestionItem extends StatelessWidget {
       'Saturday',
       'Sunday'
     ];
-    return days[day]; // monday = 0
+    return days[day - 1]; // monday = 1
   }
 
   String _formatTimeOfDay(int minutesSinceMidnight) {

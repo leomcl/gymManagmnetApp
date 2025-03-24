@@ -1,4 +1,5 @@
 // use user preferences to get the class suggestion
+import 'dart:developer';
 import 'package:test/domain/repositories/gym_class_repository.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart';
 import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
@@ -28,6 +29,7 @@ class GetClassSuggestion {
     );
 
     final preferredWorkoutDays = await getUserPreferedDays(userId, 3);
+    log('Preferred workout days: ${preferredWorkoutDays.toString()}');
     final preferredWorkoutTypes = await getUserPreferedWorkout(userId, 3);
 
     for (var gymClass in classes) {
