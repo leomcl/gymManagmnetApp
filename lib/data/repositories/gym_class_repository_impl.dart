@@ -15,11 +15,18 @@ class GymClassRepositoryImpl implements GymClassRepository {
     try {
       final querySnapshot = await _firestore
           .collection(_collectionName)
-          .orderBy('classTime', descending: false)
+          .orderBy('dayOfWeek')
+          .orderBy('timeOfDay')
           .get();
 
       return _convertQuerySnapshotToGymClasses(querySnapshot);
     } catch (e) {
+      if (e is FirebaseException &&
+          e.message != null &&
+          e.message!.contains('index')) {
+        print(
+            'Index required: ${e.message}'); // This will log the link in the console
+      }
       throw Exception('Failed to get all classes: $e');
     }
   }
@@ -47,11 +54,18 @@ class GymClassRepositoryImpl implements GymClassRepository {
       final querySnapshot = await _firestore
           .collection(_collectionName)
           .where('tags.$tag', isEqualTo: true)
-          .orderBy('classTime', descending: false)
+          .orderBy('dayOfWeek')
+          .orderBy('timeOfDay')
           .get();
 
       return _convertQuerySnapshotToGymClasses(querySnapshot);
     } catch (e) {
+      if (e is FirebaseException &&
+          e.message != null &&
+          e.message!.contains('index')) {
+        print(
+            'Index required: ${e.message}'); // This will log the link in the console
+      }
       throw Exception('Failed to get classes by tag: $e');
     }
   }
@@ -59,20 +73,24 @@ class GymClassRepositoryImpl implements GymClassRepository {
   @override
   Future<List<GymClass>> getClassesByDate(DateTime date) async {
     try {
-      // Create start and end timestamps for the given date
-      final startOfDay = DateTime(date.year, date.month, date.day);
-      final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+      // Get the day of week (0-6) from the date
+      int dayOfWeek =
+          date.weekday - 1; // Convert DateTime weekday (1-7) to our 0-6 format
 
       final querySnapshot = await _firestore
           .collection(_collectionName)
-          .where('classTime',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('classTime', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
-          .orderBy('classTime', descending: false)
+          .where('dayOfWeek', isEqualTo: dayOfWeek)
+          .orderBy('timeOfDay')
           .get();
 
       return _convertQuerySnapshotToGymClasses(querySnapshot);
     } catch (e) {
+      if (e is FirebaseException &&
+          e.message != null &&
+          e.message!.contains('index')) {
+        print(
+            'Index required: ${e.message}'); // This will log the link in the console
+      }
       throw Exception('Failed to get classes by date: $e');
     }
   }

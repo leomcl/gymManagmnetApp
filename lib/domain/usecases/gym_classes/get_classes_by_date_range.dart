@@ -11,19 +11,27 @@ class GetClassesByDateRange {
     required DateTime endDate,
   }) async {
     final List<GymClass> allClasses = [];
+    final Set<int> daysToFetch = {};
 
-    // Get classes for each day in the range
-    DateTime currentDate =
-        DateTime(startDate.year, startDate.month, startDate.day);
-    final DateTime endDay = DateTime(endDate.year, endDate.month, endDate.day);
-
-    while (
-        currentDate.isBefore(endDay) || currentDate.isAtSameMomentAs(endDay)) {
-      final classesForDay = await repository.getClassesByDate(currentDate);
-      allClasses.addAll(classesForDay);
+    // Get the list of days we need to fetch
+    DateTime currentDate = startDate;
+    while (currentDate.isBefore(endDate.add(const Duration(days: 1)))) {
+      // Convert weekday (1-7, Monday-Sunday) to our format (0-6)
+      int dayOfWeek = currentDate.weekday - 1;
+      daysToFetch.add(dayOfWeek);
 
       // Move to next day
       currentDate = currentDate.add(const Duration(days: 1));
+    }
+
+    // Fetch all classes
+    final allAvailableClasses = await repository.getAllClasses();
+
+    // Filter classes by days in our range
+    for (var gymClass in allAvailableClasses) {
+      if (daysToFetch.contains(gymClass.dayOfWeek)) {
+        allClasses.add(gymClass);
+      }
     }
 
     return allClasses;

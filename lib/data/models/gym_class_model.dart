@@ -4,13 +4,15 @@ import 'package:test/domain/entities/gym_class.dart';
 class GymClassModel {
   final String classId;
   final String className;
-  final DateTime classTime;
+  final int dayOfWeek;
+  final int timeOfDay; // Minutes since midnight
   final Map<String, bool> tags;
 
   GymClassModel({
     required this.classId,
     required this.className,
-    required this.classTime,
+    required this.dayOfWeek,
+    required this.timeOfDay,
     required this.tags,
   });
 
@@ -23,7 +25,8 @@ class GymClassModel {
     return GymClassModel(
       classId: snapshot.id,
       className: data['className'] ?? '',
-      classTime: (data['classTime'] as Timestamp).toDate(),
+      dayOfWeek: data['dayOfWeek'] ?? 0,
+      timeOfDay: data['timeOfDay'] ?? 0,
       tags: Map<String, bool>.from(data['tags'] ?? {}),
     );
   }
@@ -32,7 +35,8 @@ class GymClassModel {
   Map<String, dynamic> toFirestore() {
     return {
       'className': className,
-      'classTime': Timestamp.fromDate(classTime),
+      'dayOfWeek': dayOfWeek,
+      'timeOfDay': timeOfDay,
       'tags': tags,
     };
   }
@@ -42,7 +46,8 @@ class GymClassModel {
     return GymClass(
       classId: classId,
       className: className,
-      classTime: classTime,
+      dayOfWeek: dayOfWeek,
+      timeOfDay: timeOfDay,
       tags: tags,
     );
   }
@@ -52,7 +57,8 @@ class GymClassModel {
     return GymClassModel(
       classId: gymClass.classId,
       className: gymClass.className,
-      classTime: gymClass.classTime,
+      dayOfWeek: gymClass.dayOfWeek,
+      timeOfDay: gymClass.timeOfDay,
       tags: gymClass.tags,
     );
   }
