@@ -66,6 +66,7 @@ import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
+import 'package:test/presentation/cubit/profile/profile_cubit.dart';
 
 // Use cases - Gym Stats
 import 'package:test/domain/repositories/gym_stats_repository.dart';
@@ -192,6 +193,11 @@ Future<void> init() async {
         getClassById: sl(),
         getClassesByDate: sl(),
         getClassesByTag: sl(),
+      ));
+
+  sl.registerFactory(() => ProfileCubit(
+        getUserPreferedDays: sl(),
+        getUserPreferedWorkout: sl(),
       ));
 
   //! External

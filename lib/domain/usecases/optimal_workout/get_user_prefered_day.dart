@@ -23,7 +23,7 @@ class GetUserPreferedDays {
 
     for (var workout in workoutHistory30Days) {
       final day = workout.dayOfWeek;
-      dayCounts[day] = (dayCounts[day] ?? 0);
+      dayCounts[day] = (dayCounts[day] ?? 0) + 1;
     }
 
     // Sort days by frequency (descending)

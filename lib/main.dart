@@ -32,7 +32,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<WorkoutSelectionCubit>(
           create: (context) => di.sl<WorkoutSelectionCubit>(),
         ),
-        
         BlocProvider<OccupancyCubit>(
           create: (context) {
             final cubit = di.sl<OccupancyCubit>();
