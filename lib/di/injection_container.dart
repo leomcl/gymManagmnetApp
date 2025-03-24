@@ -53,7 +53,6 @@ import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart'
 
 // Use cases - Optimal Workout
 import 'package:test/domain/usecases/user_trends/get_optimal_workout_times.dart';
-import 'package:test/domain/usecases/user_trends/format_optimal_workout_times.dart';
 import 'package:test/domain/usecases/user_trends/get_user_prefered_workout.dart';
 import 'package:test/domain/usecases/user_trends/get_user_prefered_day.dart';
 import 'package:test/domain/usecases/user_trends/get_class_suggestion.dart';
@@ -134,7 +133,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOptimalWorkoutTimes(
         occupancyRepository: sl<OccupancyRepository>(),
       ));
-  sl.registerLazySingleton(() => FormatOptimalWorkoutTimes());
   sl.registerLazySingleton(
       () => GetUserPreferedWorkout(sl<GetWorkoutHistory>()));
   sl.registerLazySingleton(() => GetUserPreferedDays(sl<GetWorkoutHistory>()));
