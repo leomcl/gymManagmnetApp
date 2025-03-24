@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/domain/entities/workout.dart';
-import 'package:test/data/models/workout_model.dart';
 
 class WorkoutRepositoryImpl implements WorkoutRepository {
   final FirebaseFirestore _firestore;
@@ -113,6 +112,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   // New method for querying workouts by date range (all users)
+  @override
   Future<List<Workout>> getWorkoutsByDateRange({
     required DateTime startDate,
     required DateTime endDate,
