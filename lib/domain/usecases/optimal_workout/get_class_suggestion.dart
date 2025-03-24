@@ -35,7 +35,9 @@ class GetClassSuggestion {
 
     for (var gymClass in classes) {
       var classScore = 0;
-      var workoutTypeInClass = gymClass.tags.keys.toList();
+      var workoutTypeInClass = gymClass.tags.keys
+          .where((tag) => gymClass.tags[tag] == true)
+          .toList();
 
       // Add score for preferred day
       if (preferredWorkoutDays.contains(gymClass.dayOfWeek)) {

@@ -14,9 +14,10 @@ class ClassSuggestionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       margin: EdgeInsets.zero,
-      color: _getBackgroundColor(score),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -30,8 +31,7 @@ class ClassSuggestionItem extends StatelessWidget {
                 Expanded(
                   child: Text(
                     gymClass.className,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -43,10 +43,10 @@ class ClassSuggestionItem extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: Colors.blue,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -54,13 +54,12 @@ class ClassSuggestionItem extends StatelessWidget {
                           color: Colors.white,
                           size: 16,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'Highly Recommended',
-                          style: TextStyle(
+                          style: theme.textTheme.labelSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -70,26 +69,24 @@ class ClassSuggestionItem extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _buildInfoRow(
-                Icons.calendar_today, _getDayName(gymClass.dayOfWeek)),
+                context, Icons.calendar_today, _getDayName(gymClass.dayOfWeek)),
             const SizedBox(height: 4),
-            _buildInfoRow(
-                Icons.access_time, _formatTimeOfDay(gymClass.timeOfDay)),
+            _buildInfoRow(context, Icons.access_time,
+                _formatTimeOfDay(gymClass.timeOfDay)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: gymClass.tags.keys.map((tag) {
-                return Container(
+              children: gymClass.tags.entries
+                  .where((entry) => entry.value)
+                  .map((entry) => entry.key)
+                  .map((tag) {
+                return Chip(
+                  label: Text(tag),
+                  backgroundColor: Colors.blue.shade100,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    tag,
-                    style: const TextStyle(fontSize: 12),
-                  ),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                  labelStyle: theme.textTheme.bodySmall,
                 );
               }).toList(),
             ),
@@ -99,27 +96,20 @@ class ClassSuggestionItem extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.black54),
+        Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 8),
-        Text(text, style: const TextStyle(fontSize: 14)),
+        Text(
+          text,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
       ],
     );
-  }
-
-  Color _getBackgroundColor(int score) {
-    switch (score) {
-      case 3:
-        return Colors.green.withOpacity(0.15);
-      case 2:
-        return Colors.blue.withOpacity(0.1);
-      case 1:
-        return Colors.grey.withOpacity(0.1);
-      default:
-        return Colors.transparent;
-    }
   }
 
   String _getDayName(int day) {
@@ -132,7 +122,7 @@ class ClassSuggestionItem extends StatelessWidget {
       'Saturday',
       'Sunday'
     ];
-    return days[day]; // monday = 0, sunday = 6
+    return days[day]; // monday = 0
   }
 
   String _formatTimeOfDay(int minutesSinceMidnight) {
@@ -141,5 +131,25 @@ class ClassSuggestionItem extends StatelessWidget {
 
     final time = DateTime(2022, 1, 1, hours, minutes);
     return DateFormat.jm().format(time); // Formats as "8:30 AM"
+  }
+
+  Color _getBackgroundColor(BuildContext context, int score) {
+    // Return default/transparent for all cases to match class_view.dart
+    return Colors.transparent;
+
+    // Alternatively, if you still want subtle color differences but lighter:
+    /*
+    final theme = Theme.of(context);
+    switch (score) {
+      case 3:
+        return Colors.blue.shade50; // Very light blue
+      case 2:
+        return Colors.grey.shade50;
+      case 1:
+        return theme.cardColor; // Default card color
+      default:
+        return theme.cardColor;
+    }
+    */
   }
 }

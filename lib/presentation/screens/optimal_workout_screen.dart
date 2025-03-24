@@ -123,7 +123,7 @@ class OptimalWorkoutScreen extends StatelessWidget {
         'Saturday',
         'Sunday'
       ];
-      return days[day - 1]; // Assuming days are 1-indexed (1=Monday, 7=Sunday)
+      return days[day];
     }
 
     return Center(
@@ -340,62 +340,6 @@ class OptimalWorkoutScreen extends StatelessWidget {
                                   ),
                                 ))
                             .toList(),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Class Suggestions Card
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.recommend,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Recommended Classes',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    if (state.classSuggestions.isEmpty)
-                      const Text(
-                        'No class suggestions found.',
-                        style: TextStyle(fontSize: 16),
-                      )
-                    else
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: state.classSuggestions.entries.map((entry) {
-                          final gymClass = entry.key;
-                          final score = entry.value;
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: ClassSuggestionItem(
-                              gymClass: gymClass,
-                              score: score,
-                            ),
-                          );
-                        }).toList(),
                       ),
                   ],
                 ),
