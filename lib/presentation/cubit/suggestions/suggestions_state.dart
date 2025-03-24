@@ -12,13 +12,15 @@ class SuggestionsInitial extends SuggestionsState {}
 class SuggestionsLoading extends SuggestionsState {}
 
 class SuggestionsLoaded extends SuggestionsState {
-  final String weekOptimalTimes;
-  final String todayOptimalTimes;
+  final Map<int, List<int>> weekOptimalTimes;
+  final List<int> todayOptimalTimes;
+  final int today;
   final Map<GymClass, int> classSuggestions;
 
   const SuggestionsLoaded({
     required this.weekOptimalTimes,
     required this.todayOptimalTimes,
+    required this.today,
     required this.classSuggestions,
   });
 
@@ -26,6 +28,7 @@ class SuggestionsLoaded extends SuggestionsState {
   List<Object?> get props => [
         weekOptimalTimes,
         todayOptimalTimes,
+        today,
         classSuggestions,
       ];
 }

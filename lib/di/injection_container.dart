@@ -106,7 +106,6 @@ Future<void> init() async {
   );
   sl.registerFactory(() => SuggestionsCubit(
         getOptimalWorkoutTimes: sl(),
-        formatOptimalWorkoutTimes: sl(),
         getCurrentUser: sl(),
         getUserPreferedWorkout: sl(),
         getUserPreferedDays: sl(),

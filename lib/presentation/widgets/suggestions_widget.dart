@@ -123,10 +123,16 @@ class SuggestionsWidget extends StatelessWidget {
             // Weekly optimal times
             _buildSectionHeader(context, 'Optimal training times this week'),
             const SizedBox(height: 8),
-            Text(
-              state.weekOptimalTimes,
-              style: const TextStyle(fontSize: 14, height: 1.4),
-            ),
+            _buildWeeklyOptimalTimes(context, state.weekOptimalTimes),
+
+            // Today's optimal times
+            if (state.todayOptimalTimes.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildSectionHeader(context, 'Best times to train today'),
+              const SizedBox(height: 8),
+              _buildTodayOptimalTimes(
+                  context, state.todayOptimalTimes, state.today),
+            ],
 
             const SizedBox(height: 16),
             Center(
@@ -150,6 +156,113 @@ class SuggestionsWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildWeeklyOptimalTimes(
+      BuildContext context, Map<int, List<int>> optimalTimes) {
+    if (optimalTimes.isEmpty) {
+      return const Text(
+          'No optimal workout times found based on your preferences.');
+    }
+
+    final daysOfWeek = {
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+      7: 'Sunday',
+    };
+
+    // Sort by day of week
+    final sortedDays = optimalTimes.keys.toList()..sort();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: sortedDays.map((day) {
+        final hours = optimalTimes[day] ?? [];
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                daysOfWeek[day] ?? 'Unknown',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+              if (hours.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0, top: 4.0),
+                  child: Text('No optimal times found for this day.'),
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: hours
+                      .map((hour) => _buildTimeChip(context, hour))
+                      .toList(),
+                ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTodayOptimalTimes(
+      BuildContext context, List<int> hours, int today) {
+    if (hours.isEmpty) {
+      return const Text('No optimal training times for today');
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: hours
+          .map((hour) => _buildTimeChip(context, hour, isToday: true))
+          .toList(),
+    );
+  }
+
+  Widget _buildTimeChip(BuildContext context, int hour,
+      {bool isToday = false}) {
+    final now = DateTime.now();
+    final isCurrentHour = now.hour == hour && isToday;
+    final isPastHour = now.hour > hour && isToday;
+
+    return Chip(
+      backgroundColor: isCurrentHour
+          ? Theme.of(context).colorScheme.secondary.withOpacity(0.7)
+          : isPastHour
+              ? Colors.grey.withOpacity(0.3)
+              : Theme.of(context).primaryColor.withOpacity(0.1),
+      label: Text(
+        _formatHour(hour),
+        style: TextStyle(
+          color: isCurrentHour
+              ? Colors.white
+              : isPastHour
+                  ? Colors.grey
+                  : Theme.of(context).primaryColor,
+          fontWeight: isCurrentHour ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      avatar: isCurrentHour
+          ? Icon(Icons.access_time_filled, size: 16, color: Colors.white)
+          : null,
+    );
+  }
+
+  String _formatHour(int hour) {
+    final period = hour < 12 ? 'AM' : 'PM';
+    final displayHour = hour % 12 == 0 ? 12 : hour % 12;
+    return '$displayHour:00 $period';
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {

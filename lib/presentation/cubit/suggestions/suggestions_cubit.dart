@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:test/domain/entities/gym_class.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
 import 'package:test/domain/usecases/optimal_workout/get_user_optimal_workout_time.dart';
-import 'package:test/domain/usecases/optimal_workout/format_optimal_workout_times.dart';
 import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
 import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
 import 'package:test/domain/usecases/optimal_workout/get_class_suggestion.dart';
@@ -13,7 +12,6 @@ part 'suggestions_state.dart';
 
 class SuggestionsCubit extends Cubit<SuggestionsState> {
   final GetOptimalWorkoutTimes getOptimalWorkoutTimes;
-  final FormatOptimalWorkoutTimes formatOptimalWorkoutTimes;
   final GetCurrentUser getCurrentUser;
   final GetUserPreferedWorkout getUserPreferedWorkout;
   final GetUserPreferedDays getUserPreferedDays;
@@ -21,7 +19,6 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
 
   SuggestionsCubit({
     required this.getOptimalWorkoutTimes,
-    required this.formatOptimalWorkoutTimes,
     required this.getCurrentUser,
     required this.getUserPreferedWorkout,
     required this.getUserPreferedDays,
@@ -40,7 +37,7 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
         return;
       }
 
-      // Get optimal workout times
+      // Get optimal workout times for preferred days
       final getUserOptimalWorkoutTime = GetUserOptimalWorkoutTime(
         getUserPreferedDays: getUserPreferedDays,
         getOptimalWorkoutTimes: getOptimalWorkoutTimes,
@@ -48,7 +45,7 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
       final optimalTimes =
           await getUserOptimalWorkoutTime.call(currentUser.uid, limit);
 
-      // Convert List<List<int>> to Map<int, List<int>> for formatOptimalWorkoutTimes
+      // Convert List<List<int>> to Map<int, List<int>> for storing optimal times by day
       Map<int, List<int>> optimalTimesMap = {};
       for (int i = 0; i < optimalTimes.length; i++) {
         final preferredDay = await getUserPreferedDays(currentUser.uid, limit);
@@ -57,27 +54,18 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
         }
       }
 
-      final formattedResult = formatOptimalWorkoutTimes(optimalTimesMap);
-
       // Get today's optimal times
       final today = DateTime.now().weekday;
-      final todayOptimalTimes = optimalTimesMap[today] ?? [];
-      String todayFormattedTimes = '';
-
-      if (todayOptimalTimes.isNotEmpty) {
-        final todayMap = <int, List<int>>{today: todayOptimalTimes};
-        todayFormattedTimes = formatOptimalWorkoutTimes(todayMap);
-      } else {
-        todayFormattedTimes = 'No optimal training times for today';
-      }
+      final todayOptimalTimes = await getOptimalWorkoutTimes(today, limit);
 
       // Get class suggestions
       final classSuggestions = await getClassSuggestion(
           currentUser.uid, 3); // Show top 3 suggestions
 
       emit(SuggestionsLoaded(
-        weekOptimalTimes: formattedResult,
-        todayOptimalTimes: todayFormattedTimes,
+        weekOptimalTimes: optimalTimesMap,
+        todayOptimalTimes: todayOptimalTimes,
+        today: today,
         classSuggestions: classSuggestions,
       ));
     } catch (e) {

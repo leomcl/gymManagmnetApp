@@ -304,11 +304,17 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      state.todayOptimalTimes,
-                      style: const TextStyle(fontSize: 14, height: 1.4),
-                    ),
+                    const SizedBox(height: 12),
+                    if (state.todayOptimalTimes.isEmpty)
+                      const Text('No optimal training times for today')
+                    else
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: state.todayOptimalTimes
+                            .map((hour) => _buildTimeChip(context, hour, true))
+                            .toList(),
+                      ),
                   ],
                 ),
               ),
@@ -343,6 +349,40 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         },
       ),
     );
+  }
+
+  Widget _buildTimeChip(BuildContext context, int hour, bool isToday) {
+    final now = DateTime.now();
+    final isCurrentHour = now.hour == hour && isToday;
+    final isPastHour = now.hour > hour && isToday;
+
+    return Chip(
+      backgroundColor: isCurrentHour
+          ? Theme.of(context).colorScheme.secondary.withOpacity(0.7)
+          : isPastHour
+              ? Colors.grey.withOpacity(0.3)
+              : Theme.of(context).primaryColor.withOpacity(0.1),
+      label: Text(
+        _formatHour(hour),
+        style: TextStyle(
+          color: isCurrentHour
+              ? Colors.white
+              : isPastHour
+                  ? Colors.grey
+                  : Theme.of(context).primaryColor,
+          fontWeight: isCurrentHour ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      avatar: isCurrentHour
+          ? Icon(Icons.access_time_filled, size: 16, color: Colors.white)
+          : null,
+    );
+  }
+
+  String _formatHour(int hour) {
+    final period = hour < 12 ? 'AM' : 'PM';
+    final displayHour = hour % 12 == 0 ? 12 : hour % 12;
+    return '$displayHour:00 $period';
   }
 
   Widget _buildCodeSection() {
