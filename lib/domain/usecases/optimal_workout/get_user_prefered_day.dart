@@ -9,7 +9,7 @@ class GetUserPreferedDays {
 
   GetUserPreferedDays(this.getWorkoutHistory);
 
-  Future<List<int>> call(String userId) async {
+  Future<List<int>> call(String userId, int limit) async {
     final workoutHistory = await getWorkoutHistory(userId: userId);
 
     // get the workout history for the last 30 days
@@ -30,6 +30,6 @@ class GetUserPreferedDays {
     final sortedDays = dayCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return sortedDays.map((e) => e.key).take(3).toList();
+    return sortedDays.map((e) => e.key).take(limit).toList();
   }
 }

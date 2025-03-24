@@ -25,6 +25,7 @@ class OptimalWorkoutCubit extends Cubit<OptimalWorkoutState> {
 
   Future<void> loadOptimalWorkoutTimes() async {
     emit(OptimalWorkoutLoading());
+    const int limit = 3;
 
     try {
       final currentUser = await getCurrentUser();
@@ -37,8 +38,9 @@ class OptimalWorkoutCubit extends Cubit<OptimalWorkoutState> {
       final optimalTimes = await getOptimalWorkoutTimes(currentUser.uid);
       final formattedResult = formatOptimalWorkoutTimes(optimalTimes);
       final preferredWorkoutTypes =
-          await getUserPreferedWorkout(currentUser.uid, 3);
-      final preferredWorkoutDays = await getUserPreferedDays(currentUser.uid);
+          await getUserPreferedWorkout(currentUser.uid, limit);
+      final preferredWorkoutDays =
+          await getUserPreferedDays(currentUser.uid, limit);
 
       emit(OptimalWorkoutLoaded(
         optimalTimes: optimalTimes,
