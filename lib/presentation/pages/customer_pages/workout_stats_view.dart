@@ -132,19 +132,25 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
 
   Widget _buildWorkoutList(List<Workout> workouts) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (int index = 0; index < workouts.length; index++) ...[
-          _buildWorkoutItem(workouts[index]),
-          if (index < workouts.length - 1) const Divider(),
-        ],
-        const SizedBox(height: 12),
-        Center(
-          child: TextButton(
-            onPressed: () {
-              // Navigate to detailed workout history
-            },
-            child: const Text('View Complete History'),
+        ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: workouts.length,
+          itemBuilder: (context, index) {
+            return _buildWorkoutItem(workouts[index]);
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Center(
+            child: TextButton(
+              onPressed: () {
+                // Navigate to detailed workout history
+              },
+              child: const Text('View Complete History'),
+            ),
           ),
         ),
       ],
@@ -229,45 +235,68 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
     // Get workout tags
     final workoutTags = workout.workoutTags;
 
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: bgColor,
-        child: Icon(workoutIcon, color: iconColor),
-      ),
-      title: Text(
-        workoutType,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$relativeTime · $duration min'),
-          if (workoutTags.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Wrap(
-                spacing: 4,
-                children: workoutTags
-                    .map((tag) => Chip(
-                          label: Text(tag),
-                          labelStyle: const TextStyle(fontSize: 10),
-                          padding: const EdgeInsets.all(0),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
-                        ))
-                    .toList(),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: InkWell(
+        onTap: () {
+          // Navigate to workout details
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: bgColor,
+                        child: Icon(workoutIcon, color: iconColor),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        workoutType,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '$duration min',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-            ),
-        ],
+              const SizedBox(height: 8),
+              Text(
+                relativeTime,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              if (workoutTags.isNotEmpty) const SizedBox(height: 8),
+              if (workoutTags.isNotEmpty)
+                Wrap(
+                  spacing: 8,
+                  children: workoutTags
+                      .map((tag) => Chip(
+                            label: Text(tag),
+                            backgroundColor: Colors.blue.shade100,
+                          ))
+                      .toList(),
+                ),
+            ],
+          ),
+        ),
       ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        // Navigate to workout details
-      },
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-      isThreeLine: workoutTags.isNotEmpty,
     );
   }
 }
