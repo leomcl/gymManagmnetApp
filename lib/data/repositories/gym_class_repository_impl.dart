@@ -73,9 +73,9 @@ class GymClassRepositoryImpl implements GymClassRepository {
   @override
   Future<List<GymClass>> getClassesByDate(DateTime date) async {
     try {
-      // Get the day of week (0-6) from the date
+      // Get the day of week (1-7) from the date
       int dayOfWeek =
-          date.weekday - 1; // Convert DateTime weekday (1-7) to our 0-6 format
+          date.weekday; // Using standard 1-7 format where Monday = 1
 
       final querySnapshot = await _firestore
           .collection(_collectionName)
