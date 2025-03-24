@@ -123,7 +123,7 @@ class OptimalWorkoutScreen extends StatelessWidget {
         'Saturday',
         'Sunday'
       ];
-      return days[day];
+      return days[day - 1];
     }
 
     return Center(

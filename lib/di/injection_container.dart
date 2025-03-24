@@ -135,7 +135,6 @@ Future<void> init() async {
   // Use cases - Optimal Workout
   sl.registerLazySingleton(() => GetOptimalWorkoutTimes(
         occupancyRepository: sl<OccupancyRepository>(),
-        preferencesRepository: sl<UserPreferencesRepository>(),
       ));
   sl.registerLazySingleton(() => FormatOptimalWorkoutTimes());
   sl.registerLazySingleton(
