@@ -17,6 +17,8 @@ import 'package:test/presentation/screens/optimal_workout_screen.dart';
 import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
+import 'package:test/presentation/widgets/suggestions_widget.dart';
+import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -76,6 +78,40 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
           children: [
             _buildStatusCard(),
             const SizedBox(height: 20),
+
+            // Display today's optimal times section only when user isn't in the gym
+            BlocBuilder<WorkoutCubit, WorkoutState>(
+              builder: (context, state) {
+                final authState = context.read<AuthCubit>().state;
+                String? userId;
+                if (authState is Authenticated) {
+                  userId = authState.userId;
+                }
+
+                return FutureBuilder<bool>(
+                  future: userId != null
+                      ? context
+                          .read<WorkoutCubit>()
+                          .isUserInGymUseCase(userId: userId)
+                      : Future.value(false),
+                  builder: (context, snapshot) {
+                    final isInGym = snapshot.data ?? false;
+
+                    if (!isInGym) {
+                      return Column(
+                        children: [
+                          _buildTodayOptimalTimes(),
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                );
+              },
+            ),
+
             _buildCodeSection(),
             const SizedBox(height: 20),
             _buildRecentWorkoutsSection(),
@@ -223,6 +259,90 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
             isEntry: isEntry,
           );
     }
+  }
+
+  // Add this new method to build today's optimal training times
+  Widget _buildTodayOptimalTimes() {
+    return BlocProvider(
+      create: (context) => GetIt.I<SuggestionsCubit>(),
+      child: BlocBuilder<SuggestionsCubit, SuggestionsState>(
+        builder: (context, state) {
+          if (state is SuggestionsInitial) {
+            context.read<SuggestionsCubit>().loadSuggestions();
+            return const SizedBox.shrink();
+          } else if (state is SuggestionsLoading) {
+            return const SizedBox(
+              height: 80,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is SuggestionsLoaded) {
+            return Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 18,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Optimal training times today',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.todayOptimalTimes,
+                      style: const TextStyle(fontSize: 14, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (state is SuggestionsError) {
+            return Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Optimal training times today',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Unable to load optimal times: ${state.message}'),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+      ),
+    );
   }
 
   Widget _buildCodeSection() {
@@ -435,60 +555,10 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     );
   }
 
-  // todo: Implement recent workouts section
   Widget _buildRecentWorkoutsSection() {
-    // This is a placeholder for recent workouts section
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Recent Workouts',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.blue[100],
-                child: const Icon(Icons.fitness_center, color: Colors.blue),
-              ),
-              title: const Text('Full Body Workout'),
-              subtitle: const Text('Yesterday · 45 min'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                // Navigate to workout details
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.green[100],
-                child: const Icon(Icons.directions_run, color: Colors.green),
-              ),
-              title: const Text('Cardio Session'),
-              subtitle: const Text('3 days ago · 30 min'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                // Navigate to workout details
-              },
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                // Navigate to all workouts
-              },
-              child: const Text('View All Workouts'),
-            ),
-          ],
-        ),
-      ),
+    return BlocProvider(
+      create: (context) => GetIt.I<SuggestionsCubit>(),
+      child: const SuggestionsWidget(),
     );
   }
 

@@ -66,6 +66,7 @@ import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/cubit/gym_classes/gym_classes_cubit.dart';
 import 'package:test/presentation/cubit/workout_selection/workout_selection_cubit.dart';
 import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
+import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
 
 // Use cases - Gym Stats
 import 'package:test/domain/repositories/gym_stats_repository.dart';
@@ -103,6 +104,14 @@ Future<void> init() async {
       getCurrentUser: sl<GetCurrentUser>(),
     ),
   );
+  sl.registerFactory(() => SuggestionsCubit(
+        getOptimalWorkoutTimes: sl(),
+        formatOptimalWorkoutTimes: sl(),
+        getCurrentUser: sl(),
+        getUserPreferedWorkout: sl(),
+        getUserPreferedDays: sl(),
+        getClassSuggestion: sl(),
+      ));
   sl.registerFactory(() => OptimalWorkoutCubit(
         getOptimalWorkoutTimes: sl(),
         formatOptimalWorkoutTimes: sl(),
@@ -166,7 +175,6 @@ Future<void> init() async {
   sl.registerLazySingleton<GymClassRepository>(() => GymClassRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
-
 
   // Use cases - Gym Classes
   sl.registerLazySingleton(() => GetAllClasses(sl()));
