@@ -16,12 +16,14 @@ class OptimalWorkoutLoaded extends OptimalWorkoutState {
   final String formattedResult;
   final List<String> preferredWorkoutTypes;
   final List<int> preferredWorkoutDays;
+  final Map<GymClass, int> classSuggestions;
 
   const OptimalWorkoutLoaded({
     required this.optimalTimes,
     required this.formattedResult,
     required this.preferredWorkoutTypes,
     required this.preferredWorkoutDays,
+    required this.classSuggestions,
   });
 
   @override
@@ -29,7 +31,8 @@ class OptimalWorkoutLoaded extends OptimalWorkoutState {
         optimalTimes,
         formattedResult,
         preferredWorkoutTypes,
-        preferredWorkoutDays
+        preferredWorkoutDays,
+        classSuggestions,
       ];
 }
 

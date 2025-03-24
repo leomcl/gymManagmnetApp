@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 import 'package:test/presentation/widgets/loading_indicator.dart';
 import 'package:test/presentation/screens/user_preferences_screen.dart';
+import 'package:test/presentation/widgets/class_suggestion_item.dart';
 
 class OptimalWorkoutScreen extends StatelessWidget {
   const OptimalWorkoutScreen({Key? key}) : super(key: key);
@@ -169,6 +170,62 @@ class OptimalWorkoutScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            // Class Suggestions Card
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.recommend,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Recommended Classes',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (state.classSuggestions.isEmpty)
+                      const Text(
+                        'No class suggestions found.',
+                        style: TextStyle(fontSize: 16),
+                      )
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: state.classSuggestions.entries.map((entry) {
+                          final gymClass = entry.key;
+                          final score = entry.value;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: ClassSuggestionItem(
+                              gymClass: gymClass,
+                              score: score,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             // Preferred Workout Days Card
             Card(
               elevation: 2,
@@ -283,6 +340,62 @@ class OptimalWorkoutScreen extends StatelessWidget {
                                   ),
                                 ))
                             .toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Class Suggestions Card
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.recommend,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Recommended Classes',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (state.classSuggestions.isEmpty)
+                      const Text(
+                        'No class suggestions found.',
+                        style: TextStyle(fontSize: 16),
+                      )
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: state.classSuggestions.entries.map((entry) {
+                          final gymClass = entry.key;
+                          final score = entry.value;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: ClassSuggestionItem(
+                              gymClass: gymClass,
+                              score: score,
+                            ),
+                          );
+                        }).toList(),
                       ),
                   ],
                 ),
