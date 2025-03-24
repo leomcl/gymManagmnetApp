@@ -7,12 +7,10 @@ import 'package:test/domain/repositories/auth_repository.dart';
 import 'package:test/domain/repositories/workout_repository.dart';
 import 'package:test/domain/repositories/access_code_repository.dart';
 import 'package:test/domain/repositories/occupancy_repository.dart';
-import 'package:test/domain/repositories/user_preferences_repository.dart';
 import 'package:test/data/repositories/auth_repository_impl.dart';
 import 'package:test/data/repositories/workout_repository_impl.dart';
 import 'package:test/data/repositories/access_code_repository_impl.dart';
 import 'package:test/data/repositories/occupancy_repository_impl.dart';
-import 'package:test/data/repositories/user_preferences_repository_impl.dart';
 
 // repositories - Gym Classes
 import 'package:test/domain/repositories/gym_class_repository.dart';
@@ -142,7 +140,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetUserPreferedDays(sl<GetWorkoutHistory>()));
   sl.registerLazySingleton(() => GetClassSuggestion(
         gymClassRepository: sl<GymClassRepository>(),
-        preferencesRepository: sl<UserPreferencesRepository>(),
         getClassesByDateRange: sl<GetClassesByDateRange>(),
         getUserPreferedDays: sl<GetUserPreferedDays>(),
         getUserPreferedWorkout: sl<GetUserPreferedWorkout>(),
@@ -169,8 +166,7 @@ Future<void> init() async {
   sl.registerLazySingleton<GymClassRepository>(() => GymClassRepositoryImpl(
         firestore: sl<FirebaseFirestore>(),
       ));
-  sl.registerLazySingleton<UserPreferencesRepository>(
-      () => UserPreferencesRepositoryImpl(sl()));
+
 
   // Use cases - Gym Classes
   sl.registerLazySingleton(() => GetAllClasses(sl()));

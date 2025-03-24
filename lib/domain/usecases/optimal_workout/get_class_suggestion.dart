@@ -1,5 +1,4 @@
 // use user preferences to get the class suggestion
-import 'package:test/domain/repositories/user_preferences_repository.dart';
 import 'package:test/domain/repositories/gym_class_repository.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart';
 import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
@@ -8,14 +7,12 @@ import 'package:test/domain/entities/gym_class.dart';
 
 class GetClassSuggestion {
   final GymClassRepository gymClassRepository;
-  final UserPreferencesRepository preferencesRepository;
   final GetClassesByDateRange getClassesByDateRange;
   final GetUserPreferedDays getUserPreferedDays;
   final GetUserPreferedWorkout getUserPreferedWorkout;
 
   GetClassSuggestion({
     required this.gymClassRepository,
-    required this.preferencesRepository,
     required this.getClassesByDateRange,
     required this.getUserPreferedDays,
     required this.getUserPreferedWorkout,

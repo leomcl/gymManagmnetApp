@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/presentation/cubit/optimal_workout/optimal_workout_cubit.dart';
 import 'package:test/presentation/widgets/loading_indicator.dart';
-import 'package:test/presentation/screens/user_preferences_screen.dart';
 import 'package:test/presentation/widgets/class_suggestion_item.dart';
 
 class OptimalWorkoutScreen extends StatelessWidget {
@@ -13,23 +12,6 @@ class OptimalWorkoutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Optimal Workout Times'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UserPreferencesScreen(),
-                ),
-              ).then((_) {
-                // Refresh when returning from preferences
-                context.read<OptimalWorkoutCubit>().loadOptimalWorkoutTimes();
-              });
-            },
-            tooltip: 'Set workout preferences',
-          ),
-        ],
       ),
       body: BlocProvider.value(
         value: context.read<OptimalWorkoutCubit>()..loadOptimalWorkoutTimes(),
@@ -82,17 +64,9 @@ class OptimalWorkoutScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UserPreferencesScreen(),
-                        ),
-                      ).then((_) {
-                        // Refresh when returning from preferences
-                        context
-                            .read<OptimalWorkoutCubit>()
-                            .loadOptimalWorkoutTimes();
-                      });
+                      context
+                          .read<OptimalWorkoutCubit>()
+                          .loadOptimalWorkoutTimes();
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -100,7 +74,7 @@ class OptimalWorkoutScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Set Workout Preferences'),
+                    child: const Text('Refresh Workout Data'),
                   ),
                 ),
               ],
@@ -400,17 +374,9 @@ class OptimalWorkoutScreen extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UserPreferencesScreen(),
-                          ),
-                        ).then((_) {
-                          // Refresh when returning from preferences
-                          context
-                              .read<OptimalWorkoutCubit>()
-                              .loadOptimalWorkoutTimes();
-                        });
+                        context
+                            .read<OptimalWorkoutCubit>()
+                            .loadOptimalWorkoutTimes();
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -418,7 +384,7 @@ class OptimalWorkoutScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Set Workout Preferences'),
+                      child: const Text('Refresh Workout Data'),
                     ),
                   ),
                 ],
