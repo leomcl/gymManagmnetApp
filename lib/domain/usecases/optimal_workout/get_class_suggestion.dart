@@ -2,42 +2,73 @@
 import 'package:test/domain/repositories/user_preferences_repository.dart';
 import 'package:test/domain/repositories/gym_class_repository.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart';
+import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
+import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
 import 'package:test/domain/entities/gym_class.dart';
 
 class GetClassSuggestion {
   final GymClassRepository gymClassRepository;
   final UserPreferencesRepository preferencesRepository;
   final GetClassesByDateRange getClassesByDateRange;
+  final GetUserPreferedDays getUserPreferedDays;
+  final GetUserPreferedWorkout getUserPreferedWorkout;
 
   GetClassSuggestion({
     required this.gymClassRepository,
     required this.preferencesRepository,
     required this.getClassesByDateRange,
+    required this.getUserPreferedDays,
+    required this.getUserPreferedWorkout,
   });
 
-  // get gym classrs for this week
-  Future<List<GymClass>> getGymClasseSuggestion(String userId) async {
-    final userPreferences =
-        await preferencesRepository.getUserPreferences(userId);
-
-    if (userPreferences == null ||
-        userPreferences.preferredWorkoutDays.isEmpty) {
-      throw Exception(
-          'User preferences not found or preferred workout days not set');
-    }
+  // returns map of integer (1-3, 3 being most suited to user) and gym class
+  Future<Map<GymClass, int>> call(String userId, int limit) async {
+    final recommendedClasses = <GymClass, int>{};
 
     final classes = await getClassesByDateRange(
       startDate: DateTime.now(),
       endDate: DateTime.now().add(Duration(days: 7)),
     );
 
-    return classes;
+    final preferredWorkoutDays = await getUserPreferedDays(userId, 3);
+    final preferredWorkoutTypes = await getUserPreferedWorkout(userId, 3);
+
+    for (var gymClass in classes) {
+      var classScore = 0;
+      var workoutTypeInClass = gymClass.tags.keys.toList();
+
+      // Add score for preferred day
+      if (preferredWorkoutDays.contains(gymClass.dayOfWeek)) {
+        classScore++;
+      }
+
+      // Add score for each preferred workout type (up to max score of 3)
+      for (var type in workoutTypeInClass) {
+        if (preferredWorkoutTypes.contains(type)) {
+          classScore++;
+
+          // Cap the total score at 3
+          if (classScore >= 3) {
+            classScore = 3;
+            break;
+          }
+        }
+      }
+
+      recommendedClasses[gymClass] = classScore;
+    }
+
+    final sortedEntries = recommendedClasses.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final limitedEntries = sortedEntries.take(limit);
+
+    return Map.fromEntries(limitedEntries);
   }
 }
 
-// use prefered workout day,
-// find whta they like to train based of workout history
-// suggest the class based on the prefered workout day and the workout history
-
+// Score 1: Class is on preferred day OR class has one preferred workout type
+// Score 2: Class is on preferred day AND has one preferred workout type OR class has two preferred workout types
+// Score 3: Class has optimal combination of preferred day and workout types
 
 
