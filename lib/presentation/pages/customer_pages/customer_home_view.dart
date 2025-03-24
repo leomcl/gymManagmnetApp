@@ -85,6 +85,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
     );
   }
 
+  // todo make profile page
   Widget _buildProfilePage() {
     return Center(
       child: Column(
@@ -130,60 +131,73 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         }
 
         return Card(
-          elevation: 4,
+          elevation: 2,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
                 CircleAvatar(
-                  radius: 40,
+                  radius: 25,
                   backgroundColor: Colors.grey[200],
                   child: Icon(
                     Icons.person,
-                    size: 40,
+                    size: 25,
                     color: Colors.grey[800],
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  email ?? 'No user email',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color:
-                        isMembershipValid ? Colors.green[100] : Colors.red[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        isMembershipValid ? Icons.check_circle : Icons.cancel,
-                        color: isMembershipValid
-                            ? Colors.green[700]
-                            : Colors.red[700],
-                      ),
-                      const SizedBox(width: 8),
                       Text(
-                        isMembershipValid
-                            ? 'Active Membership'
-                            : 'Inactive Membership',
-                        style: TextStyle(
+                        email ?? 'No user email',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
                           color: isMembershipValid
-                              ? Colors.green[700]
-                              : Colors.red[700],
-                          fontWeight: FontWeight.bold,
+                              ? Colors.green[100]
+                              : Colors.red[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isMembershipValid
+                                  ? Icons.check_circle
+                                  : Icons.cancel,
+                              color: isMembershipValid
+                                  ? Colors.green[700]
+                                  : Colors.red[700],
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              isMembershipValid
+                                  ? 'Active Membership'
+                                  : 'Inactive',
+                              style: TextStyle(
+                                color: isMembershipValid
+                                    ? Colors.green[700]
+                                    : Colors.red[700],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
