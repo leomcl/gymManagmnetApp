@@ -1,5 +1,5 @@
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
-import 'package:test/domain/usecases/optimal_workout/get_optimal_workout_times.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_day.dart';
+import 'package:test/domain/usecases/user_trends/get_optimal_workout_times.dart';
 
 class GetUserOptimalWorkoutTime {
   final GetUserPreferedDays getUserPreferedDays;

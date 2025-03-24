@@ -2,8 +2,8 @@
 import 'dart:developer';
 import 'package:test/domain/repositories/gym_class_repository.dart';
 import 'package:test/domain/usecases/gym_classes/get_classes_by_date_range.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_day.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_workout.dart';
 import 'package:test/domain/entities/gym_class.dart';
 
 class GetClassSuggestion {

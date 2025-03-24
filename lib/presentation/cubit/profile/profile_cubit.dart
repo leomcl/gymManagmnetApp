@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_day.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_workout.dart';
 import 'package:test/presentation/cubit/profile/profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {

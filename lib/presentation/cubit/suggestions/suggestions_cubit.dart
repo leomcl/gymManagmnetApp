@@ -2,11 +2,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:test/domain/entities/gym_class.dart';
 import 'package:test/domain/usecases/auth/get_current_user.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_optimal_workout_time.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_workout.dart';
-import 'package:test/domain/usecases/optimal_workout/get_user_prefered_day.dart';
-import 'package:test/domain/usecases/optimal_workout/get_class_suggestion.dart';
-import 'package:test/domain/usecases/optimal_workout/get_optimal_workout_times.dart';
+import 'package:test/domain/usecases/user_trends/get_user_optimal_workout_time.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_workout.dart';
+import 'package:test/domain/usecases/user_trends/get_user_prefered_day.dart';
+import 'package:test/domain/usecases/user_trends/get_class_suggestion.dart';
+import 'package:test/domain/usecases/user_trends/get_optimal_workout_times.dart';
 
 part 'suggestions_state.dart';
 
