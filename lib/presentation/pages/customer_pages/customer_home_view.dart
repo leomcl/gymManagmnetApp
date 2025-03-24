@@ -17,6 +17,7 @@ import 'package:test/presentation/pages/customer_pages/gym_stats_view.dart';
 import 'package:test/presentation/cubit/occupancy/occupancy_cubit.dart';
 import 'package:test/presentation/widgets/suggestions_widget.dart';
 import 'package:test/presentation/cubit/suggestions/suggestions_cubit.dart';
+import 'package:test/presentation/pages/customer_pages/profile_view.dart';
 
 class CustomerHomeView extends StatefulWidget {
   const CustomerHomeView({super.key});
@@ -51,7 +52,7 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
         create: (context) => GetIt.I<OccupancyCubit>(),
         child: const GymStatsView(),
       ),
-      _buildProfilePage(),
+      const ProfileView(),
     ];
 
     // Check gym status when view initializes
@@ -111,40 +112,6 @@ class _CustomerHomeViewState extends State<CustomerHomeView> {
             _buildRecentWorkoutsSection(),
           ],
         ),
-      ),
-    );
-  }
-
-  // todo make profile page
-  Widget _buildProfilePage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.person, size: 100, color: Colors.grey),
-          const SizedBox(height: 20),
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              String? email;
-              if (state is Authenticated) {
-                email = state.email;
-              }
-              return Text(
-                email ?? 'User Profile',
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () {
-              context.read<AuthCubit>().signOut();
-            },
-            icon: const Icon(Icons.logout),
-            label: const Text('Sign Out'),
-          ),
-        ],
       ),
     );
   }
