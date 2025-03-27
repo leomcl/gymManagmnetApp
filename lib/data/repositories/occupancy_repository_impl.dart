@@ -81,6 +81,20 @@ class OccupancyRepositoryImpl implements OccupancyRepository {
     }
   }
 
+  @override
+  Future<int> countUsersCurrentlyInGym() async {
+    try {
+      // Get a snapshot of all documents in the usersInGym collection
+      final snapshot = await _firestore.collection('usersInGym').get();
+
+      // Return the count of documents
+      return snapshot.docs.length;
+    } catch (e) {
+      print('Error counting users in gym: $e');
+      return 0; // Return 0 in case of an error
+    }
+  }
+
   // Helper methods
   String _createDocId(DateTime dateTime) {
     return '${DateFormat('yyyy-MM-dd').format(dateTime)}-${dateTime.hour.toString().padLeft(2, '0')}';

@@ -10,4 +10,7 @@ abstract class OccupancyRepository {
   /// Get occupancy records for a date range
   Future<List<Occupancy>> getOccupancyForDateRange(
       DateTime startDate, DateTime endDate);
+
+  /// Count the number of users currently in the gym
+  Future<int> countUsersCurrentlyInGym();
 }
