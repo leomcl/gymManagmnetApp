@@ -1,4 +1,3 @@
-import '../../../domain/entities/occupancy.dart';
 import '../../../domain/repositories/occupancy_repository.dart';
 
 class GetCurrentOccupancy {
