@@ -7,7 +7,7 @@ import '../models/occupancy_model.dart';
 
 class OccupancyRepositoryImpl implements OccupancyRepository {
   final FirebaseFirestore _firestore;
-  final String _collectionName = 'gymHourlyStats';
+  final String _collectionName = 'gymHourlyStatsMock';
 
   OccupancyRepositoryImpl({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;

@@ -5,7 +5,7 @@ import 'package:test/domain/repositories/gym_class_repository.dart';
 
 class GymClassRepositoryImpl implements GymClassRepository {
   final FirebaseFirestore _firestore;
-  final String _collectionName = 'classes';
+  final String _collectionName = 'classesMock';
 
   GymClassRepositoryImpl({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;

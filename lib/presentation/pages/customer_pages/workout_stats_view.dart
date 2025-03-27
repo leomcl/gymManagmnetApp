@@ -89,19 +89,24 @@ class WorkoutSelectionPageState extends State<WorkoutSelectionPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatItem('Total Workouts', totalWorkouts.toString()),
-                _buildStatItem(
-                  'Total Time',
-                  '${(totalMinutes / 60).toStringAsFixed(1)} hours',
-                ),
-                _buildStatItem(
-                  'Avg. Duration',
-                  '${(totalMinutes / totalWorkouts).toStringAsFixed(0)} min',
-                ),
-              ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildStatItem('Total Workouts', totalWorkouts.toString()),
+                  const SizedBox(width: 20),
+                  _buildStatItem(
+                    'Total Time',
+                    '${(totalMinutes / 60).toStringAsFixed(1)} hrs',
+                  ),
+                  const SizedBox(width: 20),
+                  _buildStatItem(
+                    'Avg. Duration',
+                    '${(totalMinutes / totalWorkouts).toStringAsFixed(0)} min',
+                  ),
+                ],
+              ),
             ),
           ],
         ),

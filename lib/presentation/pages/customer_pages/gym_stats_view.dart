@@ -11,7 +11,10 @@ class GymStatsView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Refresh occupancy data every time the view is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<OccupancyCubit>().loadCurrentOccupancy();
+      // Set the time period to monthly by default when loading
+      context.read<OccupancyCubit>()
+        ..changeTimePeriod(TimePeriod.monthly)
+        ..loadCurrentOccupancy();
     });
 
     return BlocBuilder<OccupancyCubit, OccupancyState>(
@@ -61,28 +64,15 @@ class GymStatsView extends StatelessWidget {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Peak Hours',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.all(16.0),
-                      sliver: _buildPeakHoursList(context, state),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Average Occupancy',
+                              'Monthly Average Occupancy',
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            _buildTimePeriodToggle(context, state),
+                            // Time period toggle removed
                           ],
                         ),
                       ),
@@ -110,7 +100,7 @@ class GymStatsView extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          DateFormat('EEEE, MMMM dd, yyyy').format(state.selectedDate),
+          DateFormat('MMMM yyyy').format(state.selectedDate),
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -191,51 +181,6 @@ class GymStatsView extends StatelessWidget {
                   ),
                 ],
               ),
-      ),
-    );
-  }
-
-  Widget _buildTimePeriodToggle(BuildContext context, OccupancyState state) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          child: SegmentedButton<TimePeriod>(
-            style: ButtonStyle(
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-            ),
-            segments: const [
-              ButtonSegment<TimePeriod>(
-                value: TimePeriod.daily,
-                label: Text('Daily'),
-                icon: Icon(Icons.today, size: 16),
-              ),
-              ButtonSegment<TimePeriod>(
-                value: TimePeriod.weekly,
-                label: Text('Weekly'),
-                icon: Icon(Icons.date_range, size: 16),
-              ),
-              ButtonSegment<TimePeriod>(
-                value: TimePeriod.monthly,
-                label: Text('Monthly'),
-                icon: Icon(Icons.calendar_month, size: 16),
-              ),
-            ],
-            selected: {state.timePeriod},
-            onSelectionChanged: (Set<TimePeriod> selection) {
-              if (selection.isNotEmpty) {
-                context
-                    .read<OccupancyCubit>()
-                    .changeTimePeriod(selection.first);
-              }
-            },
-          ),
-        ),
       ),
     );
   }
@@ -336,73 +281,4 @@ class GymStatsView extends StatelessWidget {
     );
   }
 
-  Widget _buildPeakHoursList(BuildContext context, OccupancyState state) {
-    if (state.peakHours.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: Text('No peak hours data available')),
-          ),
-        ),
-      );
-    }
-
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final peak = state.peakHours[index];
-          final hour = peak.hour;
-          final formattedHour = hour > 12
-              ? '${hour - 12} PM'
-              : hour == 12
-                  ? '12 PM'
-                  : hour == 0
-                      ? '12 AM'
-                      : '$hour AM';
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor:
-                    Theme.of(context).primaryColor.withOpacity(0.1),
-                child: Icon(
-                  Icons.access_time,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              title: Text(
-                formattedHour,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                DateFormat('EEEE, MMM d').format(peak.date),
-              ),
-              trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  '${peak.currentOccupancy}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        childCount: state.peakHours.length,
-      ),
-    );
-  }
 }

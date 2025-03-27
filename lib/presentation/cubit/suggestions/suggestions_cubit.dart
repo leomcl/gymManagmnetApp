@@ -26,6 +26,8 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
   }) : super(SuggestionsInitial());
 
   Future<void> loadSuggestions() async {
+    if (isClosed) return;
+
     emit(SuggestionsLoading());
     const int limit = 3;
 
@@ -62,6 +64,7 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
       final classSuggestions = await getClassSuggestion(
           currentUser.uid, 3); // Show top 3 suggestions
 
+      if (isClosed) return;
       emit(SuggestionsLoaded(
         weekOptimalTimes: optimalTimesMap,
         todayOptimalTimes: todayOptimalTimes,
@@ -69,6 +72,7 @@ class SuggestionsCubit extends Cubit<SuggestionsState> {
         classSuggestions: classSuggestions,
       ));
     } catch (e) {
+      if (isClosed) return;
       emit(SuggestionsError(e.toString()));
     }
   }

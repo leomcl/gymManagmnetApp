@@ -10,7 +10,7 @@ class GymStatsRepositoryImpl implements GymStatsRepository {
 
   @override
   Stream<int> getCurrentGymOccupancy() {
-    return _firestore.collection('gymHourlyStats').snapshots().map((snapshot) {
+    return _firestore.collection('gymHourlyStatsMock').snapshots().map((snapshot) {
       int totalCount = 0;
       for (var doc in snapshot.docs) {
         final data = doc.data();
@@ -30,7 +30,7 @@ class GymStatsRepositoryImpl implements GymStatsRepository {
 
     try {
       final CollectionReference statsCollection =
-          _firestore.collection('gymHourlyStats');
+          _firestore.collection('gymHourlyStatsMock');
 
       QuerySnapshot snapshot = await statsCollection
           .where(FieldPath.documentId, isGreaterThanOrEqualTo: dateString)
